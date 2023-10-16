@@ -1,7 +1,8 @@
 import APIManager from "./src/API/ApiManager.js";
+import DefaultController from "./src/Controller/DefaultController.js";
 
 let api = APIManager.init();
 
-api.app.get('/', (req, res) => {
-    res.send('Server Working!');
-});
+
+//Controller Instanciation
+new DefaultController(api.app)
