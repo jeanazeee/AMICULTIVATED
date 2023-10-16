@@ -1,0 +1,26 @@
+{
+    "name": "amicultivated_api",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "type": "module",
+    "scripts": {
+      "dev": "nodemon app.js",
+      "start": "node app.js"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+      "body-parser": "^1.19.0",
+      "cors": "^2.8.5",
+      "express": "^4.17.1",
+      "sequelize": "^6.33.0",
+      "socket.io": "^4.7.2",
+      "sqlite3": "^5.1.6",
+      "jsonwebtoken": "^9.0.0"
+    },
+    "devDependencies": {
+      "nodemon": "^3.0.1"
+    }
+  }
+  
