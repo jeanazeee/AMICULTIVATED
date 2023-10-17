@@ -1,9 +1,18 @@
 import API from "./API.js";
+import ConfigManager from "../Config/ConfigManager.js";
 
 class APIManager {
+
+    configManager = null;
     static init(){
-        const api = new API(3000);
-        return api;
+        this.configManager = new ConfigManager();
+        return new Promise((resolve, reject) => {
+            resolve(this.createApi());
+        });
+    }
+
+    static createApi(){
+        return new API(this.configManager.apiPort);
     }
 }
 
