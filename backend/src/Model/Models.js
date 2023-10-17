@@ -1,32 +1,26 @@
 import Logger from "../Logger/Logger.js";
-import {Database} from "../Database/Database.js";
+import { getUserModel } from "./UserModel.js";
 
-export default class Models {
+class Models {
 
-    static #registeredModels = [];
-
-    
-    static registerModel(model){
-        this.#registeredModels.push(model);
+    static get allModels() {
+        return [getUserModel()];
     }
 
-    static initModels(){
-        return new Promise((resolve, reject) => {
+    static initModels() {
+        return new Promise(async (resolve, reject) => {
             try {
-                this.#registeredModels.forEach((model) => {
-                    Database.instance.db.define(model.name, model.data, model.options);
-                    Logger.success(`Models ${model.name} created`);
-                });
-
-                resolve();
+    
+                for (let model of Models.allModels) {
+                    await model.sync({alter: true});
+                    Logger.success(`Model ${model.name} synced`);
+                }
             } catch (e) {
-                Logger.error("Models failed to init");
-                reject(e);
+                Logger.error("Failed to init and sync models");
+                throw e;
             }
         });
     }
-
-    static getRegisteredModels(){
-        return this.#registeredModels;
-    }
 }
+
+export { Models };

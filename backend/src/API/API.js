@@ -1,6 +1,6 @@
 import express from "express";
 import cors from 'cors';
-import Logger from "../Logger/Logger.js";
+import bodyParser from 'body-parser';
 class API {
 
     app = null
@@ -10,6 +10,7 @@ class API {
         this.port = port
         this.app = express()
         this.app.use(cors())
+        this.app.use(bodyParser.json())
         this.app.listen(this.port)
     }
 
