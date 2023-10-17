@@ -3,19 +3,13 @@ import Logger from '../Logger/Logger.js';
 
 class DatabaseConfig{
 
-    host = null;
-    port = null;
-    database = null;
-    username = null;
-    password = null;
+    dialect = null;
+    storage = null;
 
     constructor(config={}) {
         try{
-            this.host = config.host;
-            this.port = config.port;
-            this.database = config.database;
-            this.username = config.username;
-            this.password = config.password;
+            this.dialect = config.host;
+            this.storage = config.port;
         } catch (e) {
             Logger.error("Database config failed to load");
         }
@@ -34,8 +28,11 @@ class Database {
 
     async init() {
         try{
-            const connectionString = this.config.host + ":" + this.config.port
-            this.db = new Sequelize(connectionString);
+            this.db = new Sequelize({
+                dialect: this.config.dialect,
+                storage: this.config.storage,
+            });
+            
             await this.db.authenticate();
             Logger.success("Connection to database successful");
         }catch (e) {
