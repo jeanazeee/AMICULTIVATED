@@ -2,18 +2,28 @@ import APIManager from "./src/API/ApiManager.js";
 import DefaultController from "./src/Controller/DefaultController.js";
 import AuthController from "./src/Controller/AuthController.js";
 import Logger from "./src/Logger/Logger.js"
+import DatabaseManager from "./src/Database/DatabaseManager.js";
 
 const init = async () => {
-    try {
-        const api = await APIManager.init();
-        Logger.success("API Started on port " + api.port);
+    //DB Instanciation
+    DatabaseManager.createDb()
+        .then((db) => {
+            Logger.success("Database Started");
+        })
+        .catch((e) => {
+            Logger.error("Database Failed to start");
+            console.log(e);
+        });
 
-        // Controller Instanciation
+
+    // API Instanciation
+    APIManager.createApi().then((api) => {
+        Logger.success("API Started on port " + api.port);
         initController(api.app);
-    } catch (e) {
+    }).catch((e) => {
         Logger.error("API Failed to start");
-        console.log(e);
-    }
+    });
+
 }
 
 const initController = (app) => {
