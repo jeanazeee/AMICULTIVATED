@@ -20,20 +20,28 @@ class Database {
 
     config = null;
     db = null;
+    static instance = null
 
     constructor(config=new DatabaseConfig()) {
+        if (Database.instance) {
+            Logger.error("Database already instanciated");
+            return;
+        }
         this.config = config;
         this.init();
     }
 
-    async init() {
+
+    //TODO : problem with asynchronus call to db.authenticate()
+    init() {
         try{
             this.db = new Sequelize({
                 dialect: this.config.dialect,
                 storage: this.config.storage,
             });
             
-            await this.db.authenticate();
+            this.db.authenticate();
+            Database.instance = this;
             Logger.success("Connection to database successful");
         }catch (e) {
             Logger.error("Connection to database failed");

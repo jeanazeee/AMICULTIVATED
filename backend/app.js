@@ -2,13 +2,17 @@ import APIManager from "./src/API/ApiManager.js";
 import DefaultController from "./src/Controller/DefaultController.js";
 import AuthController from "./src/Controller/AuthController.js";
 import Logger from "./src/Logger/Logger.js"
-import DatabaseManager from "./src/Database/DatabaseManager.js";
+import DatabaseFactory from "./src/Database/DatabaseFactory.js";
+import Models from "./src/Model/Models.js";
+import User_Model from "./src/Model/User_Model.js";
+import Sequelize from 'sequelize';
 
 const init = async () => {
     //DB Instanciation
-    DatabaseManager.createDb()
-        .then((db) => {
+    DatabaseFactory.createDb()
+        .then(() => {
             Logger.success("Database Started");
+            initModels();
         })
         .catch((e) => {
             Logger.error("Database Failed to start");
@@ -29,6 +33,16 @@ const init = async () => {
 const initController = (app) => {
     new DefaultController(app);
     new AuthController(app);
+}
+
+const initModels = () => {
+    Models.registerModel(new User_Model("user", {
+        username: { type: Sequelize.STRING },
+        password: { type: Sequelize.STRING },
+    }));
+
+    Models.initModels()
+    DatabaseFactory.syncModels();
 }
 
 init();
