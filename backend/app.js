@@ -4,14 +4,15 @@ import AuthController from "./src/Controller/AuthController.js";
 import Logger from "./src/Logger/Logger.js"
 import DatabaseFactory from "./src/Database/DatabaseFactory.js";
 import { Models } from "./src/Model/Models.js";
-import Sequelize from 'sequelize';
+import API from "./src/API/API.js";
 
 const init = async () => {
     //DB Instanciation
-    DatabaseFactory.createDb()
+    await DatabaseFactory.createDb()
         .then(() => {
             Logger.success("Database Started");
             Models.initModels();
+            
         })
         .catch((e) => {
             Logger.error("Database Failed to start");
@@ -20,11 +21,13 @@ const init = async () => {
 
 
     // API Instanciation
-    APIManager.createApi().then((api) => {
+    APIManager.createApi().then(() => {
+        let api = API.instance;
         Logger.success("API Started on port " + api.port);
         initController(api.app);
     }).catch((e) => {
-        Logger.error("API Failed to start");
+        Logger.error("API Failed to start" + e);
+        
     });
 }
 

@@ -8,8 +8,8 @@ class APIManager {
         this.configManager = new ConfigManager();
         return new Promise((resolve, reject) => {
             try{
-                const api = new API(this.configManager.apiPort);
-                resolve(api);
+                new API(this.configManager.apiPort);
+                resolve();
             } catch (e) {
                 reject(e);
                 throw e;

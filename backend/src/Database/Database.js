@@ -38,6 +38,7 @@ class Database {
             this.db = new Sequelize({
                 dialect: this.config.dialect,
                 storage: this.config.storage,
+                logging: false
             });
             
             this.db.authenticate();
