@@ -1,5 +1,6 @@
 import express from "express";
 import cors from 'cors';
+import Logger from "../Logger/Logger.js";
 class API {
 
     app = null
@@ -9,13 +10,9 @@ class API {
         this.port = port
         this.app = express()
         this.app.use(cors())
-        this.app.listen(this.port, this.listenFunction)
+        this.app.listen(this.port)
     }
 
-
-    listenFunction = () => {
-        console.log("Serveur Démarré sur le port " + this.port);
-    }
 }
 
 export default API;

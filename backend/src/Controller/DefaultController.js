@@ -1,3 +1,4 @@
+import Logger from "../Logger/Logger.js";
 class DefaultController {
 
     app = null;
