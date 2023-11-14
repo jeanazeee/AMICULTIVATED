@@ -2,32 +2,23 @@ import { getUserModel } from "../Model/UserModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import ConfigManager from "../Config/ConfigManager.js";
-import AuthMiddleware from "../Middlewares/AuthMiddleware.js";
 import Route from "../Route/Route.js";
-import Logger from "../Logger/Logger.js";
-class AuthController {
+import BaseController from "./BaseController.js";
+
+class AuthController extends BaseController{
     app = null
 
     user_model = null
-
-    routes = [
-        new Route("/login", "post", this.login.bind(this)),
-        new Route("/signup", "post", this.signup.bind(this)),
-    ];
-
-    constructor(app) {
-        this.app = app;
-        this.user_model = getUserModel();
-        this.initRoutes();
+    
+    defineRoutes() {
+        return [
+            new Route("/login", "post", this.login.bind(this)),
+            new Route("/signup", "post", this.signup.bind(this)),
+        ];
     }
-
-    initRoutes() {
-        Logger.info("Starting regestering routes for Controller: " + this.constructor.name);
-        for (let route of this.routes) {
-            Logger.info("Registering route " + route.path);
-            route.register(this.app);
-        }
-        Logger.success("Routes registered");
+    constructor(app) {
+        super(app)
+        this.user_model = getUserModel();
     }
 
     async login(req, res) {
@@ -64,11 +55,7 @@ class AuthController {
         const token = jwt.sign({ id: newUser.id }, ConfigManager.instance.jwtSecret, { expiresIn: "1h" });
 
         return res.status(201).json({ message: "User created successfully", token: token, username: username });
-
     }
-
-    
-
 }
 
 

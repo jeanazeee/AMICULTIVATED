@@ -1,27 +1,19 @@
 import Logger from "../Logger/Logger.js";
 import Route from "../Route/Route.js";
 import AuthMiddleware from "../Middlewares/AuthMiddleware.js";
-class DefaultController {
+import BaseController from "./BaseController.js";
+class DefaultController extends BaseController{
 
     app = null;
 
-    routes = [
-        new Route("/", "get", this.defaultRoute.bind(this)),
-        new Route("/secured", "all", this.defaultSecured.bind(this), AuthMiddleware.verifyToken)
-    ];
-
-    constructor(app) {
-        this.app = app;
-        this.initRoutes();
+    defineRoutes() {
+        return [
+            new Route("/", "get", (req, res) => this.defaultRoute(req, res)),
+            new Route("/secured", "all", (req, res) => this.defaultSecured(req, res), AuthMiddleware.verifyToken)
+        ];
     }
-
-    initRoutes() {
-        Logger.info("Starting regestering routes for Controller: " + this.constructor.name);
-        for (let route of this.routes) {
-            Logger.info("Registering route " + route.path);
-            route.register(this.app);
-        }
-        Logger.success("Routes registered");
+    constructor(app) {
+        super(app);
     }
 
     defaultRoute(req, res){

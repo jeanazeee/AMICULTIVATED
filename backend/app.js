@@ -1,4 +1,4 @@
-import APIManager from "./src/API/ApiManager.js";
+import APIManager from "./src/API/ApiFactory.js";
 import DefaultController from "./src/Controller/DefaultController.js";
 import AuthController from "./src/Controller/AuthController.js";
 import Logger from "./src/Logger/Logger.js"

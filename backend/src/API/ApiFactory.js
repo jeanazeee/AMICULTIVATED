@@ -1,7 +1,7 @@
 import API from "./API.js";
 import ConfigManager from "../Config/ConfigManager.js";
 
-class APIManager {
+class APIFactory {
 
     configManager = null;
     static createApi(){
@@ -18,4 +18,4 @@ class APIManager {
     }
 }
 
-export default APIManager;
+export default APIFactory;
