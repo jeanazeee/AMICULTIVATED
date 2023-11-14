@@ -2,3 +2,6 @@
 src/Conf/*
 .env
 .vscode/
+backend/database
+package-lock.json
+.env
