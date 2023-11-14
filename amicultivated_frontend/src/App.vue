@@ -1,5 +1,6 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
+import { Slide } from 'vue-burger-menu'
 import HelloWorld from './components/HelloWorld.vue'
 </script>
 
@@ -9,7 +10,6 @@ import HelloWorld from './components/HelloWorld.vue'
 
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
-
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/creer">Créer partie</RouterLink>

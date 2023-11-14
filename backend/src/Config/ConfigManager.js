@@ -18,7 +18,7 @@ export default class ConfigManager {
     }
 
     this.db = {
-        host: process.env.DB_HOST || "localhost",
+        host: process.env.DB_HOST || "sqlite",
         port: process.env.DB_PORT || 3306,
         database: process.env.DB_NAME || "database",
         username: process.env.DB_USERNAME || "root",
