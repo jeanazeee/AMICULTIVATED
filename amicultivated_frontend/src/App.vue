@@ -1,9 +1,12 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
+import Room from './components/Room.vue'
 </script>
 
 <template>
-  <RouterView />
+
+  <Room></Room>
+
 </template>
 
 <style scoped>
