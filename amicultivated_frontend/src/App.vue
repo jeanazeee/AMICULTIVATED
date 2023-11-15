@@ -1,29 +1,12 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import Room from './components/Room.vue'
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+  <Room></Room>
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/creer">Créer partie</RouterLink>
-        <RouterLink to="/fin">Fin partie</RouterLink>
-        <RouterLink to="/partie">Partie</RouterLink>
-        <RouterLink to="/quotidient">Jeu quotidient</RouterLink>
-        <RouterLink to="/profil">Profil</RouterLink>
-        <RouterLink to="/stats">Statistiques</RouterLink>
-        <RouterLink to="/connexion">Connexion</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
 </template>
 
 <style scoped>
