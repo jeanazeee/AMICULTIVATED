@@ -1,11 +1,13 @@
 import { DataTypes } from 'sequelize';
-import { Database } from '../Database/Database.js';
+import BaseModel from './BaseModels.js';
+import Logger from '../Logger/Logger.js';
 
-let User;
+class UserModel extends BaseModel{
 
-export const getUserModel = () => {
-    if (!User) {
-        User = Database.instance.db.define('User', {
+    static instance = null;
+
+    constructor() {
+        super('User',{
             username: {
                 type: DataTypes.STRING,
                 allowNull: false,
@@ -15,7 +17,19 @@ export const getUserModel = () => {
                 type: DataTypes.STRING,
                 allowNull: false
             }
-        });
+        })
+        UserModel.instance = this;
     }
-    return User;
+
+
+    static getInstance() {
+        if (!UserModel.instance) {
+            UserModel.instance = new UserModel();
+        }
+        return UserModel.instance;
+    }
+    
+
 }
+
+export default UserModel;

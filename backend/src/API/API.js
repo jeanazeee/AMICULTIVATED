@@ -6,6 +6,7 @@ class API {
     app = null
     port = null
     static instance = null
+    server
 
     constructor(port){
         if(API.instance){
@@ -16,7 +17,7 @@ class API {
         this.app = express()
         this.app.use(cors())
         this.app.use(bodyParser.json())
-        this.app.listen(this.port)
+        this.server = this.app.listen(this.port)
 
         API.instance = this;
     }
