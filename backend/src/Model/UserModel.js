@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import { Database } from '../Database/Database.js';
+import BaseModel from './BaseModels.js';
 
 let User;
 
@@ -14,6 +14,10 @@ export const getUserModel = () => {
             password: {
                 type: DataTypes.STRING,
                 allowNull: false
+            },
+            currentRoomId: {
+                type: DataTypes.INTEGER,
+                allowNull: true
             }
         });
     }
