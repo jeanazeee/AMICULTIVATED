@@ -4,7 +4,7 @@
             <p class="title">Sign Up</p>
             <div class="form">
                 <div class="input-group">
-                    <label for="username">Username</label>
+                    <label for="username" >Username</label>
                     <input type="text" name="username" id="username" placeholder="" v-model="username">
                 </div>
                 <div class="input-group">
@@ -17,7 +17,7 @@
             <br>
             <div class="line"></div>
             <p class="signup">Already have an account?
-                <router-link :to="{ name: 'login' }">Login</router-link>
+                <router-link  :to="{name:'login'}">Login</router-link>
             </p>
         </div>
     </div>
@@ -26,37 +26,41 @@
 <script setup>
 import { ref } from 'vue'
 import { sha256 } from 'js-sha256'
-import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
-const username = ref('')
-const password = ref('')
-
-const store = useStore();
+import { useRouter  } from 'vue-router'
+import AuthApi from './../../api/auth_api.js'
 
 const router = useRouter();
 
+const username = ref('')
+const password = ref('')
+
+const auth_api = new AuthApi();
+
 const signup = () => {
-    const hashedPassword = sha256(password.value);
-    store.dispatch('signup', { username: username.value, password: hashedPassword })
-        .then(() => {
-            router.push({ name: 'home' });
+    const hashedPassword = sha256(password.value)
+
+    auth_api.signup(username.value, hashedPassword)
+        .then((response) => {
+            console.log(response)
+            router.push({ name: 'home' })
         })
         .catch((error) => {
-            // Gérer les erreurs de l'inscription
-        });
-};
+            console.log(error)
+        })
+}
 
 </script>
 
 <style  scoped>
-.form-container {
+
+.form-container{
     width: 580px;
     height: 580px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgb(17, 24, 39);
-    background: radial-gradient(circle, rgba(17, 24, 39, 1) 0%, rgba(21, 31, 54, 1) 100%);
+    background: rgb(17,24,39);
+    background: radial-gradient(circle, rgba(17,24,39,1) 0%, rgba(21,31,54,1) 100%);
     border-radius: 0.75rem;
 
 }
@@ -105,13 +109,11 @@ const signup = () => {
 .input-group input:focus {
     border-color: rgba(167, 139, 250);
 }
-
 .signup a {
     color: rgba(243, 244, 246, 1);
     text-decoration: none;
     font-size: 14px;
 }
-
 .signup a:hover {
     text-decoration: underline rgba(167, 139, 250, 1);
 }
