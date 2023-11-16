@@ -22,6 +22,10 @@ class RoomModel extends BaseModel{
             status: {
                 type: DataTypes.STRING,
                 allowNull: false
+            },
+            adminId: {
+                type: DataTypes.INTEGER,
+                allowNull: false
             }
         })
         RoomModel.instance = this;

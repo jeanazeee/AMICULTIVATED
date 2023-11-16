@@ -20,6 +20,10 @@ class UserRepository {
         });
     }
 
+    addRoomToUser = (username, roomId) => {
+        return this.model.update({ currentRoomId: roomId }, { where: { username: username } });
+    }
+
 }
 
 export default UserRepository;

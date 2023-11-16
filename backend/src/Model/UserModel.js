@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
 import BaseModel from './BaseModels.js';
-import Logger from '../Logger/Logger.js';
 
 class UserModel extends BaseModel{
 
@@ -16,6 +15,10 @@ class UserModel extends BaseModel{
             password: {
                 type: DataTypes.STRING,
                 allowNull: false
+            },
+            currentRoomId: {
+                type: DataTypes.INTEGER,
+                allowNull: true
             }
         })
         UserModel.instance = this;

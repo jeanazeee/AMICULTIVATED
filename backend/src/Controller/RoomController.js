@@ -1,12 +1,13 @@
 import BaseController from "./BaseController.js";
 import RoomRepository from "../Repository/RoomRepository.js";
+import UserRepository from "../Repository/UserRepository.js";
 import Route from "../Route/Route.js";
-import Logger from "../Logger/Logger.js";
 
 class RoomController extends BaseController{
 
     app = null
     roomRepository = null
+    userRepository = null
     static prefix = "/room"
 
     defineRoutes() {
@@ -19,7 +20,7 @@ class RoomController extends BaseController{
     constructor(app) {
         super(app)
         this.roomRepository = new RoomRepository();
-
+        this.userRepository = new UserRepository();
     }
 
 
@@ -31,13 +32,30 @@ class RoomController extends BaseController{
         if(maxPlayers == undefined){
             return res.status(400).json({message: "Missing maxPlayers"});
         }
+
+        if(username == undefined){
+            return res.status(400).json({message: "Missing username"});
+        }
         // generate a five char (number and letters) code for the room that will be use to join it
         let roomCode = this.generateRoomCode();
         let status = "Open";
+        let user = await this.userRepository.getUserByUsername(username);
+
+        if (!user) {
+            return res.status(400).json({ message: "User not found" });
+        }
+
+
+        // check if user is not already in a room
+        if(user.currentRoomId != null){
+            return res.status(400).json({ message: "User is already in a room" });
+        }
 
         // create the room in db
+        let room = await this.roomRepository.createRoom(roomCode, maxPlayers, status, user.id);
 
-        let room = await this.roomRepository.createRoom(roomCode, maxPlayers, status);
+        console.log(room);
+        await this.userRepository.addRoomToUser(username, room.id);
 
         // connect the user to the room
 
@@ -48,7 +66,7 @@ class RoomController extends BaseController{
     async join(req, res){
         const {roomCode, username} = req.body;
         // Validation de base
-        if (!roomCode) {
+        if (!roomCode || !username) {
             return res.status(400).json({ message: "Missing required fields" });
         }
 
@@ -58,8 +76,18 @@ class RoomController extends BaseController{
             return res.status(400).json({ message: "Room is not joinable" });
         }
 
+        let user = await this.userRepository.getUserByUsername(username);
+
+        if (!user) {
+            return res.status(400).json({ message: "User not found" });
+        }
+
+        let room = await this.roomRepository.getRoomByCode(roomCode);
+
+        await this.userRepository.addRoomToUser(username, room.id);
 
         await this.roomRepository.incrementCurrentPlayerNumber(roomCode);
+
 
         res.status(200).json({ message: "Joined room successfully", code: roomCode});
     }

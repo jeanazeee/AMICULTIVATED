@@ -6,12 +6,13 @@ class RoomRepository {
         this.model = RoomModel.getInstance().getModel();
     }
 
-    createRoom = (roomCode, maxPlayers, status) => {
+    createRoom = (roomCode, maxPlayers, status, adminId) => {
         return this.model.create({
             code: roomCode,
-            currentPlayerNumber: 0,
+            currentPlayerNumber: 1,
             maxPlayers: maxPlayers,
             status: status,
+            adminId: adminId
         });
     }
 
