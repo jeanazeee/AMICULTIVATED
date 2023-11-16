@@ -37,6 +37,26 @@ class API {
             }
         });
     }
+
+    async createRoom() {
+        try {
+            const body = {
+                maxPlayers: 5,
+                username: 'alex'
+            };
+    
+            const response = await this.api.post('room/create', body);
+            let roomCode = response.data.room.code;
+            console.log(`Room created: ${roomCode}`);
+    
+            this.roomSocketManager.joinRoom(roomCode, 'alex');
+            
+            return roomCode; 
+        } catch (error) {
+            console.error('Error creating room:', error);
+        }
+    }
+    
 }
 
 export default API;
