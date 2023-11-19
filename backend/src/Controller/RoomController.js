@@ -54,7 +54,6 @@ class RoomController extends BaseController{
         // create the room in db
         let room = await this.roomRepository.createRoom(roomCode, maxPlayers, status, user.id);
 
-        console.log(room);
         await this.userRepository.addRoomToUser(username, room.id);
 
         // connect the user to the room
@@ -82,6 +81,10 @@ class RoomController extends BaseController{
             return res.status(400).json({ message: "User not found" });
         }
 
+        if(user.currentRoomId != null){
+            return res.status(400).json({ message: "User is already in a room" });
+        }
+
         let room = await this.roomRepository.getRoomByCode(roomCode);
 
         await this.userRepository.addRoomToUser(username, room.id);
@@ -94,17 +97,28 @@ class RoomController extends BaseController{
 
 
     async leave(req, res){
-        const {roomCode, username} = req.body;
-        // Validation de base
-        if (!roomCode) {
-            return res.status(400).json({ message: "Missing required fields" });
+        const {username} = req.body;
+       //Check if user is in room
+       
+        let user = await this.userRepository.getUserByUsername(username);
+        if(!user){
+            return res.status(400).json({ message: "User not found" });
         }
 
-        //Check if user is in room
+        if(user.currentRoomId == null){
+            return res.status(400).json({ message: "User is not in a room" });
+        }
+        
+        let roomId = user.currentRoomId;
+        
+        // get room code
+        let room = await this.roomRepository.getRoomById(roomId);
+        await this.roomRepository.decrementCurrentPlayerNumber(room.code);
 
-        await this.roomRepository.decrementCurrentPlayerNumber(roomCode);
+        // user currentRoomId to null
+        await this.userRepository.removeRoomFromUser(username);
 
-        res.status(200).json({ message: "Left room successfully", code: roomCode});
+        res.status(200).json({ message: "Left room successfully", code: room.code});
     }
 
     generateRoomCode = () => {

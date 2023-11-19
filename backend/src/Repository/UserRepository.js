@@ -24,6 +24,10 @@ class UserRepository {
         return this.model.update({ currentRoomId: roomId }, { where: { username: username } });
     }
 
+    removeRoomFromUser = (username) => {
+        return this.model.update({ currentRoomId: null }, { where: { username: username } });
+    }
+
 }
 
 export default UserRepository;

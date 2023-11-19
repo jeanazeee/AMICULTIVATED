@@ -6,8 +6,9 @@
         </div>
         <div class="join-leave">
             <button @click="joinRoom()">Join Room</button>
-            <button @click="leaveRoom()">Leave Room</button>
             <input type="text" name="" id="" v-model="roomCode" >
+            <button @click="leaveRoom()">Leave Room</button>
+
         </div>
     </div>
   </template>
@@ -15,24 +16,27 @@
 <script setup>
 import { ref } from 'vue'
 import API from './../api/api.js'
+import { useStore } from 'vuex';
 
 
 const roomCode = ref()
 const api = new API()
+const store = useStore();
 
 const joinRoom = () => {
-    api.joinRoom(roomCode.value, "")
+    let username = store.state.username;
+    api.joinRoom(roomCode.value, username)
 }
 
 
 const leaveRoom = () => {
-    api.leaveRoom(roomCode.value, "")
+    let username = store.state.username;
+    api.leaveRoom(username)
 }
 
 const createRoom = async () => {
     try {
         let roomCode = await api.createRoom();
-        console.log(roomCode);
         document.getElementById("room-code").innerHTML = "Room code : " + roomCode;
     } catch (error) {
         console.error('Error in createRoom:', error);

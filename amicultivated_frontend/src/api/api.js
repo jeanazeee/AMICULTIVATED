@@ -27,13 +27,13 @@ class API {
         }
     }
 
-    async leaveRoom(roomCode, userName) {
+    async leaveRoom(username) {
         this.api.post('room/leave', {
-            roomCode: roomCode,
-            username: userName
+            username: username
         }).then((response) => {
             if(response.status === 200){
-                this.roomSocketManager.leaveRoom(roomCode, userName);
+                let roomCode = response.data.code;
+                this.roomSocketManager.leaveRoom(roomCode, username);
             }
         });
     }
@@ -47,7 +47,6 @@ class API {
     
             const response = await this.api.post('room/create', body);
             let roomCode = response.data.room.code;
-            console.log(`Room created: ${roomCode}`);
     
             this.roomSocketManager.joinRoom(roomCode, 'alex');
             

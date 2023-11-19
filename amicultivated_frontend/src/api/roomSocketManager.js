@@ -9,6 +9,7 @@ class RoomSocketManager {
     constructor() {
         this.socket = io('http://localhost:3000/room');
         this.initEventHandler();
+        console.log('RoomSocketManager initialized');
     }
 
 

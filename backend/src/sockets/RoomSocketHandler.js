@@ -1,11 +1,17 @@
 import Logger from "../Logger/Logger.js";
+import RoomRepository from "../Repository/RoomRepository.js";
+import UserRepository from "../Repository/UserRepository.js";
 
 class RoomSocketHandler {
 
     io = null;
+    userRepository = null;
+    roomRepository = null;
 
     constructor(io) {
         this.io = io;
+        this.userRepository = new UserRepository();
+        this.roomRepository = new RoomRepository();
         this.setupRoomNamespace();
     }
 
@@ -27,7 +33,7 @@ class RoomSocketHandler {
                 });
             });
 
-            socket.on("leaveRoom", ({ roomCode, username }) => {
+            socket.on("leaveRoom", async ({roomCode, username}) => {
                 socket.leave(roomCode);
                 Logger.info(`Utilisateur ${socket.id} a quitté la room: ${roomCode}`);
                 roomNamespace.to(roomCode).emit('userLeft', { user: socket.id, room: roomCode });

@@ -8,7 +8,7 @@ class SocketManager {
         this.io = new Server(server, {
             // cors
             cors: {
-                origin: "http://localhost:5173", // Votre client
+                origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
                 methods: ["GET", "POST"]
             }
 

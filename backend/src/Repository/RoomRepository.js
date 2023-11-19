@@ -20,6 +20,10 @@ class RoomRepository {
         return await this.model.findOne({ where: { code: roomCode } });
     }
 
+    async getRoomById(roomId) {
+        return await this.model.findOne({ where: { id: roomId } });
+    }
+
     async updateRoomStatus(roomCode, status) {
         return await this.model.update({ status: status }, { where: { code: roomCode } });
     }
