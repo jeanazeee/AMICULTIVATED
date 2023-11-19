@@ -2,12 +2,14 @@
 
 import axios from 'axios';
 import RoomSocketManager from './roomSocketManager';
+import { useStore } from 'vuex';
 
 
 class API {
 
     api = null;
     roomSocketManager = null;
+    store = null;
 
     constructor() {
         this.api = axios.create({
@@ -15,6 +17,7 @@ class API {
             timeout: 1000,
         });
         this.roomSocketManager = new RoomSocketManager();
+        this.store = useStore();
     }
 
     async joinRoom(roomCode, userName) {
@@ -24,6 +27,7 @@ class API {
         });
         if(response.status === 200){
             this.roomSocketManager.joinRoom(roomCode, userName);
+            this.store.commit('setCurrentRoomCode', roomCode);
         }
     }
 
@@ -34,6 +38,7 @@ class API {
             if(response.status === 200){
                 let roomCode = response.data.code;
                 this.roomSocketManager.leaveRoom(roomCode, username);
+                this.store.commit('deleteCurrentRoomCode');
             }
         });
     }
@@ -49,6 +54,7 @@ class API {
             let roomCode = response.data.room.code;
     
             this.roomSocketManager.joinRoom(roomCode, 'alex');
+            this.store.commit('setCurrentRoomCode', roomCode);
             
             return roomCode; 
         } catch (error) {

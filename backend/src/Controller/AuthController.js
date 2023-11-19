@@ -5,11 +5,13 @@ import ConfigManager from "../Config/ConfigManager.js";
 import Route from "../Route/Route.js";
 import BaseController from "./BaseController.js";
 import UserRepository from "../Repository/UserRepository.js";
+import RoomRepository from "../Repository/RoomRepository.js";
 
 class AuthController extends BaseController{
     app = null
 
     userRepository = null;
+    roomRepository = null;
     
     defineRoutes() {
         return [
@@ -20,6 +22,7 @@ class AuthController extends BaseController{
     constructor(app) {
         super(app)
         this.userRepository = new UserRepository();
+        this.roomRepository = new RoomRepository();
     }
 
     async login(req, res) {
@@ -36,12 +39,17 @@ class AuthController extends BaseController{
         }
 
         const token = jwt.sign({ id: user.id }, ConfigManager.instance.jwtSecret, { expiresIn: "1h" });
-        return res.status(200).json({ token: token,  username: username });
+
+
+        let currentRoom = (await this.roomRepository.getRoomById(user.currentRoomId));
+
+        let currentRoomCode = currentRoom ? currentRoom.code : "";
+
+        return res.status(200).json({ token: token,  username: username, currentRoomCode: currentRoomCode });
 
     }
 
     async signup(req, res) {
-        //TODO HASH IN FRONT
         const { username, password } = req.body;
 
         const user = await this.userRepository.getUserByUsername(username);
@@ -56,7 +64,11 @@ class AuthController extends BaseController{
 
         const token = jwt.sign({ id: newUser.id }, ConfigManager.instance.jwtSecret, { expiresIn: "1h" });
 
-        return res.status(201).json({ message: "User created successfully", token: token, username: username });
+        let currentRoom = (await this.roomRepository.getRoomById(user.currentRoomId));
+
+        let currentRoomCode = currentRoom ? currentRoom.code : "";
+
+        return res.status(201).json({ message: "User created successfully", token: token, username: username, currentRoomCode: currentRoomCode });
     }
 
 

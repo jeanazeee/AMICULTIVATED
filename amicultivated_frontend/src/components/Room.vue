@@ -7,7 +7,7 @@
         <div class="join-leave">
             <button @click="joinRoom()">Join Room</button>
             <input type="text" name="" id="" v-model="roomCode" >
-            <button @click="leaveRoom()">Leave Room</button>
+            <button @click="leaveRoom()" v-if="hasCurrentRoom()">Leave Room</button>
 
         </div>
     </div>
@@ -22,6 +22,10 @@ import { useStore } from 'vuex';
 const roomCode = ref()
 const api = new API()
 const store = useStore();
+
+const hasCurrentRoom = () => {
+    return store.state.currentRoomCode != "";
+}
 
 const joinRoom = () => {
     let username = store.state.username;
