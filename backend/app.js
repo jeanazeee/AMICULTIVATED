@@ -1,10 +1,15 @@
 import APIManager from "./src/API/ApiFactory.js";
-import DefaultController from "./src/Controller/DefaultController.js";
-import AuthController from "./src/Controller/AuthController.js";
 import Logger from "./src/Logger/Logger.js"
 import DatabaseFactory from "./src/Database/DatabaseFactory.js";
 import { Models } from "./src/Model/Models.js";
 import API from "./src/API/API.js";
+
+
+import DefaultController from "./src/Controller/DefaultController.js";
+import AuthController from "./src/Controller/AuthController.js";
+import RoomController from "./src/Controller/RoomController.js";
+
+import SocketManager from "./src/sockets/SocketManager.js";
 
 const init = async () => {
     //DB Instanciation
@@ -16,7 +21,7 @@ const init = async () => {
         })
         .catch((e) => {
             Logger.error("Database Failed to start");
-            console.log(e);
+            throw e;
         });
 
 
@@ -27,13 +32,16 @@ const init = async () => {
         initController(api.app);
     }).catch((e) => {
         Logger.error("API Failed to start" + e);
-        
+        throw e;
     });
+
+    let socketManager = new SocketManager(API.instance.server);
 }
 
 const initController = (app) => {
     new DefaultController(app);
     new AuthController(app);
+    new RoomController(app);
 }
 
 init();

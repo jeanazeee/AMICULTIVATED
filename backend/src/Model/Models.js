@@ -1,10 +1,11 @@
 import Logger from "../Logger/Logger.js";
-import { getUserModel } from "./UserModel.js";
+import UserModel from "./UserModel.js";
+import RoomModel from "./RoomModel.js";
 
 class Models {
 
     static get allModels() {
-        return [getUserModel()];
+        return [UserModel.getInstance(), RoomModel.getInstance()];
     }
 
     static initModels() {
@@ -12,8 +13,9 @@ class Models {
             try {
     
                 for (let model of Models.allModels) {
-                    await model.sync({alter: true});
-                    Logger.success(`Model ${model.name} synced`);
+                    let modelInstance = model.getModel();
+                    await modelInstance.sync({alter: true});
+                    Logger.success(`Model ${modelInstance.name} synced`);
                 }
             } catch (e) {
                 Logger.error("Failed to init and sync models");
@@ -21,6 +23,8 @@ class Models {
             }
         });
     }
+
+
 }
 
 export { Models };
