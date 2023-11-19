@@ -11,7 +11,7 @@ export const store = new createStore({
         token: localStorage.getItem('token') || '',
     },
     mutations: {
-        login(state, {username, token}) {
+        login(state, { username, token }) {
             state.loggedIn = true;
             state.username = username;
             state.token = token;
@@ -23,32 +23,30 @@ export const store = new createStore({
         }
     },
     actions: {
-        login: ({ commit }, { username, password }) => {
-            return authApi.login(username, password)
-                .then((response) => {
-                    localStorage.setItem('username', username);
-                    localStorage.setItem('token', response.data.token);
-                    commit('login', { username, token: response.data.token });
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
+        login: async ({ commit }, { username, password }) => {
+            try {
+                const response = await authApi.login(username, password);
+                localStorage.setItem('username', username);
+                localStorage.setItem('token', response.data.token);
+                commit('login', { username, token: response.data.token });
+            } catch (error) {
+                throw error;
+            }
         },
         logout: ({ commit }) => {
             localStorage.removeItem('username');
             localStorage.removeItem('token');
             commit('logout');
         },
-        signup: ({ commit }, { username, password }) => {
-            return authApi.signup(username, password)
-                .then((response) => {
-                    commit('login', { username, token: response.data.token });
-                    localStorage.setItem('username', username);
-                    localStorage.setItem('token', response.data.token);
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
+        signup: async ({ commit }, { username, password }) => {
+            try {
+                const response = await authApi.signup(username, password);
+                commit('login', { username, token: response.data.token });
+                localStorage.setItem('username', username);
+                localStorage.setItem('token', response.data.token);
+            } catch (error) {
+                throw error;
+            }
         },
     },
     getters: {

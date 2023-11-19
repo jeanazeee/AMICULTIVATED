@@ -1,6 +1,9 @@
 <template>
     <div class="form-container">
         <div class="form-front">
+            <div class="error">
+                <p id="error-message" v-if="errorMessage">{{ errorMessage }}</p>
+            </div>
             <p class="title">Sign Up</p>
             <div class="form">
                 <div class="input-group">
@@ -30,6 +33,7 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 const username = ref('')
 const password = ref('')
+const errorMessage = ref('');
 
 const store = useStore();
 
@@ -42,7 +46,7 @@ const signup = () => {
             router.push({ name: 'home' });
         })
         .catch((error) => {
-            // Gérer les erreurs de l'inscription
+            errorMessage.value = "Erreur d'authentification : " + error.response.data.message;
         });
 };
 
@@ -147,5 +151,11 @@ const signup = () => {
 .line {
     height: 1px;
     background-color: rgba(55, 65, 81, 1);
+}
+
+.error{
+    color: red;
+    text-align: center;
+    padding-bottom: 1rem;
 }
 </style>

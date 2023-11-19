@@ -1,6 +1,9 @@
 <template>
     <div class="form-container">
         <div class="form-front">
+            <div class="error">
+                <p id="error-message" v-if="errorMessage">{{ errorMessage }}</p>
+            </div>
             <p class="title">Login</p>
             <div class="form">
                 <div class="input-group">
@@ -33,15 +36,18 @@ import { useRouter } from 'vue-router';
 const username = ref('')
 const password = ref('')
 const router = useRouter();
+const errorMessage = ref('');
 
 const store = useStore();
 const login = () => {
     const hashedPassword = sha256(password.value);
     store.dispatch('login', { username: username.value, password: hashedPassword })
-    .then(() => {
-        // Peut-être rediriger l'utilisateur ou montrer un message de succès
-        router.push({ name: 'home' });
-    })
+        .then(() => {
+            router.push({ name: 'home' });
+        })
+        .catch((error) => {
+            errorMessage.value = "Erreur d'authentification : " + error.response.data.message;
+        });
 }
 
 </script>
@@ -145,5 +151,11 @@ const login = () => {
 .line {
     height: 1px;
     background-color: rgba(55, 65, 81, 1);
+}
+
+.error{
+    color: red;
+    text-align: center;
+    padding-bottom: 1rem;
 }
 </style>
