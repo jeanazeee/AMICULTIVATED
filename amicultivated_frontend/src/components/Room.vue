@@ -1,80 +1,155 @@
 <template>
-    <div class="greetings">
-        <div class="create">
-            <button @click="createRoom()">Create Room</button>
-            <p id="room-code"></p>
+    <div class="room-container">
+        <div class="error">
+            <p id="error-message" v-if="errorMessage">{{ errorMessage }}</p>
         </div>
-        <div class="join-leave">
-            <button @click="joinRoom()">Join Room</button>
-            <input type="text" name="" id="" v-model="roomCode" >
-            <button @click="leaveRoom()" v-if="hasCurrentRoom()">Leave Room</button>
-
+        <div class="create-join-room" v-if="!hasCurrentRoom()">
+            <div class="create">
+                <button class="full-button" @click="createRoom()">Créer une Room</button>
+            </div>
+            <div class="join">
+                <input class="join-input" type="text" name="" id="" v-model="roomCode">
+                <button class="join-button" @click="joinRoom()">Rejoindre une Room</button>
+            </div>
+        </div>
+        <div class="leave-room" v-if="hasCurrentRoom()">
+            <button class="full-button" @click="leaveRoom()">Quitter la Room</button>
+            <p id="room-code">Votre code de Room est : {{ store.state.currentRoomCode }}</p>
         </div>
     </div>
-  </template>
+</template>
 
 <script setup>
 import { ref } from 'vue'
 import API from './../api/api.js'
 import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 
 
 const roomCode = ref()
-const api = new API()
 const store = useStore();
+const api = new API(store);
+const errorMessage = ref('')
+const router = useRouter();
+
 
 const hasCurrentRoom = () => {
     return store.state.currentRoomCode != "";
 }
 
-const joinRoom = () => {
-    let username = store.state.username;
-    api.joinRoom(roomCode.value, username)
+const joinRoom = async () => {
+    try {
+        if(roomCode.value == "") throw new Error("Le code de la room ne peut pas être vide");
+        let username = store.state.username;
+        await api.joinRoom(roomCode.value, username)
+
+    } catch (error) {
+        errorMessage.value = "Erreur : " + error;
+    }
 }
 
 
-const leaveRoom = () => {
-    let username = store.state.username;
-    api.leaveRoom(username)
+const leaveRoom = async () => {
+    try {
+        let username = store.state.username;
+        await api.leaveRoom(username)
+    } catch (error) {
+        errorMessage.value = "Erreur : " + error;
+    }
 }
 
 const createRoom = async () => {
     try {
-        let roomCode = await api.createRoom();
-        document.getElementById("room-code").innerHTML = "Room code : " + roomCode;
+        let username = store.state.username;
+        roomCode.value = await api.createRoom(username);
+        router.push({ name: 'room-starting', params: { roomCode: roomCode.value } });
     } catch (error) {
-        console.error('Error in createRoom:', error);
+        console.log(error);
+        errorMessage.value = "Erreur : " + error.response.data.message;
     }
 }
 </script>
 
 <style scoped>
-
-/* greetings take all the page, and each div inside take 50 width */
-
-.greetings {
+.room-container {
+    height: 100%;
+    margin-top: 10%;
     display: flex;
-    flex-direction: row;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    height: 100vh;
+}
+
+
+.create-join-room {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
     width: 100%;
 }
 
 .create {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    width: 50%;
+
 }
 
-.join-leave {
+#room-code {
+    color: #fff;
+    font-size: 18px;
+}
+
+button {
+    min-height: 50px;
+    min-width: 150px;
+    padding: .5em 1em;
+    border: none;
+    background-color: #a78bfa;
+    color: #111827;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color .3s ease-in-out;
+}
+
+button:hover {
+    background-color: #8c68f7;
+}
+
+.full-button {
+    border-radius: 6px;
+}
+
+.join button {
+    border-radius: 0 6px 6px 0;
+}
+
+.join {
+    display: flex;
+    align-items: center;
+}
+
+.join-input {
+    min-height: 50px;
+    max-width: 150px;
+    padding: 0 1rem;
+    color: #fff;
+    font-size: 15px;
+    border: 1px solid #a78bfa;
+    border-radius: 6px 0 0 6px;
+    background-color: transparent;
+}
+
+.leave-room {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    width: 50%;
+
+}
+
+.error{
+    color: red;
+    text-align: center;
+    padding-bottom: 1rem;
 }
 </style>
 

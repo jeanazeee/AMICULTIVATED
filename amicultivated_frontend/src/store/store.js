@@ -63,8 +63,8 @@ export const store = new createStore({
                 });
         },
         setCurrentRoomCode: ({ commit }, { currentRoomCode }) => {
-            commit('setCurrentRoomCode', currentRoomCode);
             localStorage.setItem('currentRoomCode', currentRoomCode);
+            commit('setCurrentRoomCode', currentRoomCode);
         },
         deleteCurrentRoomCode: ({ commit }) => {
             commit('deleteCurrentRoomCode');

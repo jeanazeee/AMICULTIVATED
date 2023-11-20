@@ -28,6 +28,12 @@ class UserRepository {
         return this.model.update({ currentRoomId: null }, { where: { username: username } });
     }
 
+    getUsersByRoomId = (roomId) => {
+        return this.model.findAll({ where: { currentRoomId: roomId } });
+    }
+
+
+
 }
 
 export default UserRepository;

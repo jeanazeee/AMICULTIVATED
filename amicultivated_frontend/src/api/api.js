@@ -2,7 +2,6 @@
 
 import axios from 'axios';
 import RoomSocketManager from './roomSocketManager';
-import { useStore } from 'vuex';
 
 
 class API {
@@ -11,54 +10,85 @@ class API {
     roomSocketManager = null;
     store = null;
 
-    constructor() {
+    constructor(store) {
         this.api = axios.create({
             baseURL: 'http://localhost:3000/',
             timeout: 1000,
         });
         this.roomSocketManager = new RoomSocketManager();
-        this.store = useStore();
+        this.store = store;
     }
 
-    async joinRoom(roomCode, userName) {
-        const response = await this.api.post('room/join', {
-            roomCode: roomCode,
-            username: userName
-        });
-        if(response.status === 200){
-            this.roomSocketManager.joinRoom(roomCode, userName);
-            this.store.commit('setCurrentRoomCode', roomCode);
+    async joinRoom(roomCode, username) {
+        try {
+            const response = await this.api.post('room/join', {
+                roomCode: roomCode,
+                username: username
+            });
+            if(response.status === 200){
+                this.roomSocketManager.joinRoom(roomCode, username);
+                this.store.dispatch('setCurrentRoomCode', { currentRoomCode: roomCode })
+            }
+        } catch {
+            this.leaveRoom(username);
+            console.error('Error joining room:', error);
+            throw error;
         }
     }
 
     async leaveRoom(username) {
-        this.api.post('room/leave', {
-            username: username
-        }).then((response) => {
+        try{
+            const response = await this.api.post('room/leave', {
+                username: username
+            });
             if(response.status === 200){
                 let roomCode = response.data.code;
                 this.roomSocketManager.leaveRoom(roomCode, username);
-                this.store.commit('deleteCurrentRoomCode');
+                this.store.dispatch('deleteCurrentRoomCode'); 
             }
-        });
+        }catch(error){
+            console.error('Error leaving room:', error);
+            throw error;
+        }
     }
 
-    async createRoom() {
+    async createRoom(username) {
         try {
             const body = {
                 maxPlayers: 5,
-                username: 'alex'
+                username: username
             };
     
             const response = await this.api.post('room/create', body);
-            let roomCode = response.data.room.code;
-    
-            this.roomSocketManager.joinRoom(roomCode, 'alex');
-            this.store.commit('setCurrentRoomCode', roomCode);
-            
-            return roomCode; 
+
+
+            if(response.status === 201){
+                let roomCode = response.data.room.code;
+                this.roomSocketManager.joinRoom(roomCode, username);
+                this.store.dispatch('setCurrentRoomCode', { currentRoomCode: roomCode })
+            }else{
+                throw response;
+            }
+
+            return this.store.state.currentRoomCode; 
         } catch (error) {
+            this.leaveRoom(username);
             console.error('Error creating room:', error);
+            throw error;
+        }
+    }
+
+    async getRoomInfos(roomCode) {
+        try {
+            const response = await this.api.get(`room/${roomCode}`);
+            if(response.status === 200){
+                return response.data;
+            }else{
+                throw response;
+            }
+        } catch (error) {
+            console.error('Error getting room infos:', error);
+            throw error;
         }
     }
     

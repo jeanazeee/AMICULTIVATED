@@ -56,7 +56,7 @@ const login = () => {
     background: rgb(17, 24, 39);
     background: radial-gradient(circle, rgba(17, 24, 39, 1) 0%, rgba(21, 31, 54, 1) 100%);
     border-radius: 0.75rem;
-
+    margin: auto;
 }
 
 .form-front {
@@ -117,10 +117,10 @@ const login = () => {
 .sign {
     display: block;
     width: 100%;
-    background-color: rgba(167, 139, 250, 1);
+    background-color: #a78bfa;
     padding: 0.75rem;
     text-align: center;
-    color: rgba(17, 24, 39, 1);
+    color: #111827;
     border: none;
     border-radius: 0.375rem;
     font-weight: 600;

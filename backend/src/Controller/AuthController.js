@@ -64,11 +64,7 @@ class AuthController extends BaseController{
 
         const token = jwt.sign({ id: newUser.id }, ConfigManager.instance.jwtSecret, { expiresIn: "1h" });
 
-        let currentRoom = (await this.roomRepository.getRoomById(user.currentRoomId));
-
-        let currentRoomCode = currentRoom ? currentRoom.code : "";
-
-        return res.status(201).json({ message: "User created successfully", token: token, username: username, currentRoomCode: currentRoomCode });
+        return res.status(201).json({ message: "User created successfully", token: token, username: username, currentRoomCode: "" });
     }
 
 

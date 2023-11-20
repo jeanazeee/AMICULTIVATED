@@ -14,7 +14,8 @@ class RoomController extends BaseController{
         return [
             new Route(RoomController.prefix + "/create", "post", this.create.bind(this)),
             new Route(RoomController.prefix + "/join", "post", this.join.bind(this)),
-            new Route(RoomController.prefix + "/leave", "post", this.leave.bind(this))
+            new Route(RoomController.prefix + "/leave", "post", this.leave.bind(this)),
+            new Route(RoomController.prefix + "/:roomCode", "get", this.getRoomByCode.bind(this)),
         ];
     }
     constructor(app) {
@@ -120,6 +121,33 @@ class RoomController extends BaseController{
 
         res.status(200).json({ message: "Left room successfully", code: room.code});
     }
+
+    async getRoomByCode(req, res){
+        const {roomCode} = req.params;
+        if (!roomCode) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+
+        let room = await this.roomRepository.getRoomByCode(roomCode);
+        if(!room){
+            return res.status(400).json({ message: "Room not found" });
+        }
+
+        let roomData = {
+            maxPlayers: room.maxPlayers,
+            currentPlayerNumber: room.currentPlayerNumber,
+            status: room.status,
+            code: room.code,
+            players: []
+        }
+
+        //TODO JUST GET USERNAME
+        roomData.players = (await this.userRepository.getUsersByRoomId(room.id)).map(user => user.username);
+        
+
+        res.status(200).json({ message: "Room found", room: roomData});
+    }
+
 
     generateRoomCode = () => {
         let code = "";

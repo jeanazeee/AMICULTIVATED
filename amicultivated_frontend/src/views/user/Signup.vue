@@ -58,7 +58,7 @@ const signup = () => {
     background: rgb(17, 24, 39);
     background: radial-gradient(circle, rgba(17, 24, 39, 1) 0%, rgba(21, 31, 54, 1) 100%);
     border-radius: 0.75rem;
-
+    margin: auto;
 }
 
 .form-front {
