@@ -23,7 +23,7 @@
                     </div>
                 </div>
                 <div class="start-game">
-                    <button class="full-button" @click="createRoom()">Créer une Room</button>
+                    <button class="full-button" @click="createRoom()">Lancer la partie</button>
                 </div>
             </div>
         </div>
