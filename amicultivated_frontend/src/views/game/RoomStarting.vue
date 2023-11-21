@@ -2,7 +2,7 @@
     <div class="room-container">
         <div class="room-frame">
             <div class="player-list">
-                <div class="player-card" v-for="player in players" :key="player.id">
+                <div class="player-card" v-for="player in settings.players" :key="player.id">
                     {{ player }}
                 </div>
             </div>
@@ -12,7 +12,7 @@
                     <div class="max-players">
                         <label for="playerRange">Nombre de joueurs max</label>
                         <div class="slider">
-                            <input type="range" name="playerRange" id="" v-model="settings.maxPlayers" max="12">
+                            <input type="range" name="playerRange" id="" v-model="settings.maxPlayers" max="12" @change="sliderChange()">
                             {{ settings.maxPlayers }}
                         </div>
 
@@ -25,31 +25,42 @@
                 <div class="start-game">
                     <button class="full-button" @click="createRoom()">Lancer la partie</button>
                 </div>
+                <div class="leave-room">
+                    <button class="full-button" @click="leaveRoom()">Quitter la Room</button>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router';
-import { ref, watch, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { ref, watch, onMounted, onUnmounted } from 'vue';
 import API from './../../api/api.js'
 import { useStore } from 'vuex';
+import RoomSocketManager from './../../api/roomSocketManager.js'
 
-
+const router = useRouter();
 const route = useRoute();
 const roomCode = ref(route.params.roomCode);
-const players = ref([]);
 const store = useStore();
 const api = new API(store);
+const socketManager = RoomSocketManager.getInstance();
 
 const settings = ref({
-    maxPlayers: 6,
-    fullPath: ""
+    maxPlayers: 0,
+    fullPath: "",
+    players: []
 });
 
 onMounted(async () => {
     init();
+}),
+
+onUnmounted(() => {
+    socketManager.offUserJoined(getUpdateRoom);
+    socketManager.offUserLeft(getUpdateRoom);
+    socketManager.offRoomUpdated(getUpdateRoom);
 }),
 
 
@@ -58,14 +69,47 @@ onMounted(async () => {
         init();
     });
 
+
+
 const init = async () => {
+    getUpdateRoom();
+    initSocketHandlers();
+}
+
+const initSocketHandlers = () => {
+    socketManager.joinRoom(roomCode.value, store.getters.username);
+    socketManager.onUserJoined(getUpdateRoom);
+    socketManager.onUserLeft(getUpdateRoom);
+    socketManager.onRoomUpdated(getUpdateRoom);
+}
+
+const getUpdateRoom = async () => {
     const datas = await api.getRoomInfos(roomCode.value);
-    players.value = datas.room.players;
+    settings.value.players = datas.room.players;
     settings.value.fullPath = window.location.origin + route.fullPath
+    settings.value.maxPlayers = datas.room.maxPlayers;
+}
+
+const sendUpdateRoom = async () => {
+    await api.updateRoom(roomCode.value, settings.value.maxPlayers);
+}
+
+const leaveRoom = async () => {
+    try {
+        let username = store.state.username;
+        await api.leaveRoom(username)
+        router.push({ name: 'home' });
+    } catch (error) {
+        errorMessage.value = "Erreur : " + error;
+    }
 }
 
 const copyPath = () => {
     navigator.clipboard.writeText(settings.value.fullPath);
+}
+
+const sliderChange = () => {
+    sendUpdateRoom();
 }
 </script>
 
@@ -98,6 +142,7 @@ const copyPath = () => {
     color: white;
     height: 100%;
     overflow-y: visible;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .player-card {
@@ -135,7 +180,6 @@ const copyPath = () => {
     padding: .5em 1em;
     border: none;
     background-color: #a78bfa;
-    color: #111827;
     font-size: 15px;
     cursor: pointer;
     transition: background-color .3s ease-in-out;
@@ -167,5 +211,34 @@ const copyPath = () => {
 
 .max-players {
     display: flex;
+}
+
+
+.copy-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.copy-link input {
+    height: 50px;
+    width: 280px;
+    margin-right: 20px;
+    font-size: 1rem;
+    text-align: center;
+    /* hide disabled style */
+    background-color: white;
+}
+
+.copy-link button {
+    min-height: 50px;
+    min-width: 150px;
+    padding: .5em 1em;
+    border: none;
+    background-color: #a78bfa;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color .3s ease-in-out;
+    border-radius: 6px;
 }
 </style>

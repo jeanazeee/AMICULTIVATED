@@ -42,7 +42,7 @@ const joinRoom = async () => {
         if(roomCode.value == "") throw new Error("Le code de la room ne peut pas être vide");
         let username = store.state.username;
         await api.joinRoom(roomCode.value, username)
-
+        router.push({ name: 'room-starting', params: { roomCode: roomCode.value } });
     } catch (error) {
         errorMessage.value = "Erreur : " + error;
     }
@@ -64,7 +64,7 @@ const createRoom = async () => {
         roomCode.value = await api.createRoom(username);
         router.push({ name: 'room-starting', params: { roomCode: roomCode.value } });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         errorMessage.value = "Erreur : " + error.response.data.message;
     }
 }

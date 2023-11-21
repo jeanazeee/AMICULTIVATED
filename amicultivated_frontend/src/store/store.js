@@ -35,7 +35,6 @@ export const store = new createStore({
         login: ({ commit }, { username, password }) => {
             return authApi.login(username, password)
                 .then((response) => {
-                    console.log(response);
                     localStorage.setItem('username', username);
                     localStorage.setItem('token', response.data.token);
                     localStorage.setItem('currentRoomCode', response.data.currentRoomCode);

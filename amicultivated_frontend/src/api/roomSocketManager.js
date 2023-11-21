@@ -1,17 +1,20 @@
-// Import to use socket.io
-
 import io from 'socket.io-client';
-
 
 class RoomSocketManager {
 
+    static instance = null;
     socket = null;
+
     constructor() {
         this.socket = io('http://localhost:3000/room');
-        this.initEventHandler();
-        console.log('RoomSocketManager initialized');
     }
 
+    static getInstance() {
+        if (!this.instance) {
+            this.instance = new RoomSocketManager();
+        }
+        return this.instance;
+    }
 
     joinRoom(roomCode, userName) {
         this.socket.emit('joinRoom', {
@@ -27,18 +30,35 @@ class RoomSocketManager {
         });
     }
 
-    
-    initEventHandler(){
-        this.socket.on('userJoined', (data) => {
-            console.log(`Un utilisateur a rejoint la room: `);
-            console.log(data);
-            // Mettre à jour l'interface utilisateur ici si nécessaire
+    updateRoom(roomCode, maxPlayers) {
+        this.socket.emit('updateRoom', {
+            roomCode: roomCode,
+            maxPlayers: maxPlayers
         });
+    }
 
-        this.socket.on('userLeft', (data) => {
-            console.log(`Un utilisateur a quitté la room: ${data}`);
-            // Mettre à jour l'interface utilisateur ici si nécessaire
-        });
+    onUserJoined(callback) {
+        this.socket.on('userJoined', callback);
+    }
+
+    onUserLeft(callback) {
+        this.socket.on('userLeft', callback);
+    }
+
+    onRoomUpdated(callback) {
+        this.socket.on('updateRoom', callback);
+    }
+
+    offUserJoined(callback) {
+        this.socket.off('userJoined', callback);
+    }
+
+    offUserLeft(callback) {
+        this.socket.off('userLeft', callback);
+    }
+
+    offRoomUpdated(callback) {
+        this.socket.off('updateRoom', callback);
     }
 }
 

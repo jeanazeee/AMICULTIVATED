@@ -15,7 +15,7 @@ class API {
             baseURL: 'http://localhost:3000/',
             timeout: 1000,
         });
-        this.roomSocketManager = new RoomSocketManager();
+        this.roomSocketManager = RoomSocketManager.getInstance();
         this.store = store;
     }
 
@@ -26,7 +26,6 @@ class API {
                 username: username
             });
             if(response.status === 200){
-                this.roomSocketManager.joinRoom(roomCode, username);
                 this.store.dispatch('setCurrentRoomCode', { currentRoomCode: roomCode })
             }
         } catch {
@@ -92,6 +91,23 @@ class API {
         }
     }
     
+
+    async updateRoom(roomCode, maxPlayers){
+        try{
+            const response = await this.api.put(`room/${roomCode}`, {
+                maxPlayers: maxPlayers
+            });
+            if(response.status === 200){
+                this.roomSocketManager.updateRoom(roomCode, maxPlayers);
+                return response.data;
+            }else{
+                throw response;
+            }
+        } catch (error) {
+            console.error('Error updating room:', error);
+            throw error;
+        }
+    }
 }
 
 export default API;

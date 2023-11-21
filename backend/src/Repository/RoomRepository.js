@@ -51,6 +51,10 @@ class RoomRepository {
     async isRoomJoinable(roomCode) {
         return !(await this.isRoomFull(roomCode)) && !(await this.isRoomClosed(roomCode));
     }
+
+    async updateMaxPlayers(roomCode, maxPlayers) {
+        return await this.model.update({ maxPlayers: maxPlayers }, { where: { code: roomCode } });
+    }
 }
 
 export default RoomRepository;
