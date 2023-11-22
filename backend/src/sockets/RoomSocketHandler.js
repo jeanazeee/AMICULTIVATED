@@ -37,6 +37,12 @@ class RoomSocketHandler {
                     Logger.info(`Utilisateur ${socket.id} a changé les parametres de la room: ${roomCode}`);
                     roomNamespace.to(roomCode).emit('updateRoom', { room: roomCode });
                 });
+
+                // gerer le lancement de la partie
+                socket.on("startGame", async ({ roomCode }) => {
+                    Logger.info(`Utilisateur ${socket.id} a lancé la partie de la room: ${roomCode}`);
+                    roomNamespace.to(roomCode).emit('startGame', { room: roomCode });
+                });
             });
 
             socket.on("leaveRoom", async ({roomCode, username}) => {

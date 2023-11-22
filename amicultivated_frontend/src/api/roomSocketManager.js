@@ -37,6 +37,12 @@ class RoomSocketManager {
         });
     }
 
+    startGame(roomCode) {
+        this.socket.emit('startGame', {
+            roomCode: roomCode
+        });
+    }
+
     onUserJoined(callback) {
         this.socket.on('userJoined', callback);
     }
@@ -49,6 +55,10 @@ class RoomSocketManager {
         this.socket.on('updateRoom', callback);
     }
 
+    onGameStarted(callback) {
+        this.socket.on('startGame', callback);
+    }
+
     offUserJoined(callback) {
         this.socket.off('userJoined', callback);
     }
@@ -59,6 +69,10 @@ class RoomSocketManager {
 
     offRoomUpdated(callback) {
         this.socket.off('updateRoom', callback);
+    }
+
+    offGameStarted(callback) {
+        this.socket.off('startGame', callback);
     }
 }
 

@@ -2,10 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/user/Login.vue'
 import Signup from '../views/user/Signup.vue'
-import RoomStarting from '../views/game/RoomStarting.vue'
+import Room from '../views/game/Room.vue'
 import API from '../api/api'
 
-import {store} from '../store/store.js'
+import { store } from '../store/store.js'
 
 const api = new API(store);
 
@@ -29,22 +29,39 @@ const router = createRouter({
     },
     {
       path: '/room/:roomCode',
-      name: 'room-starting',
-      component: RoomStarting,
+      name: 'room',
+      component: Room,
       beforeEnter: async (to, from, next) => {
-        const currentRoom = localStorage.getItem('currentRoomCode');
-        if (currentRoom && currentRoom == to.params.roomCode) {
+        const currentRoom = store.getters.currentRoomCode;
+        // check room status
+        const roomInfos = (await api.getRoomInfos(to.params.roomCode)).room;
 
-          next();
+        if (roomInfos.status === 'Open') {
+
+            if (currentRoom && currentRoom == to.params.roomCode) {
+              next();
+            } else {
+              // Else, user join the room if he's logged in and has a token
+              // Else, redirect to home
+
+              await api.joinRoom(to.params.roomCode, store.getters.username);
+              next();
+            }
+          } else if(roomInfos.status === 'Started'){
+
+            //Check if user is alraedy in room
+            
+            const isPlayerInRoom = roomInfos.players.find(player =>  player === store.getters.username);
+            if(isPlayerInRoom){
+              next();
+            }else{
+              next({ name: 'home' });
+            }
         } else {
-          // Else, user join the room if he's logged in and has a token
-          // Else, redirect to home
-          
-          await api.joinRoom(to.params.roomCode, store.getters.username);
-          next();
+          next({ name: 'home' });
         }
       }
-    }
+    },
   ]
 })
 

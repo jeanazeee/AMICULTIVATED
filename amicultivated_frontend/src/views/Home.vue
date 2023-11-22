@@ -1,9 +1,9 @@
 <script setup>
-import Room from './../components/Room.vue' 
+import RoomHome from './../components/RoomHome.vue' 
 </script>
 
 <template>
   <main>
-    <Room></Room>
-  </main>
+    <RoomHome></RoomHome>
+  </main> 
 </template>

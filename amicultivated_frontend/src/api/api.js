@@ -108,6 +108,21 @@ class API {
             throw error;
         }
     }
+
+    async startGame(roomCode){
+        try{
+            const response = await this.api.post(`room/${roomCode}/start`);
+            if(response.status === 200){
+                this.roomSocketManager.startGame(roomCode);
+                return response.data;
+            }else{
+                throw response;
+            }
+        } catch (error) {
+            console.error('Error starting game:', error);
+            throw error;
+        }
+    }
 }
 
 export default API;

@@ -2,28 +2,30 @@
     <div class="room-container">
         <div class="room-frame">
             <div class="player-list">
-                <div class="player-card" v-for="player in settings.players" :key="player.id">
+                <div class="player-card" v-for="player in props.roomInfos.players" :key="player.id">
                     {{ player }}
                 </div>
             </div>
             <div class="main">
+                <div v-if="errorMessage != ''">{{ errorMessage }}</div>
                 <div class="title">Room : {{ roomCode }}</div>
                 <div class="settings">
                     <div class="max-players">
                         <label for="playerRange">Nombre de joueurs max</label>
                         <div class="slider">
-                            <input type="range" name="playerRange" id="" v-model="settings.maxPlayers" max="12" @change="sliderChange()">
-                            {{ settings.maxPlayers }}
+                            <input type="range" name="playerRange" id="" v-model="props.roomInfos.maxPlayers" max="12"
+                                @change="sliderChange()">
+                            {{ props.roomInfos.maxPlayers }}
                         </div>
 
                     </div>
                     <div class="copy-link">
-                        <input type="text" name="" id="" :value="settings.fullPath" disabled>
+                        <input type="text" name="" id="" :value="fullPath" disabled>
                         <button class="copy" @click="copyPath()">Copier</button>
                     </div>
                 </div>
                 <div class="start-game">
-                    <button class="full-button" @click="createRoom()">Lancer la partie</button>
+                    <button class="full-button" @click="startGame()">Lancer la partie</button>
                 </div>
                 <div class="leave-room">
                     <button class="full-button" @click="leaveRoom()">Quitter la Room</button>
@@ -36,81 +38,50 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router';
 import { ref, watch, onMounted, onUnmounted } from 'vue';
-import API from './../../api/api.js'
 import { useStore } from 'vuex';
-import RoomSocketManager from './../../api/roomSocketManager.js'
 
 const router = useRouter();
 const route = useRoute();
 const roomCode = ref(route.params.roomCode);
 const store = useStore();
-const api = new API(store);
-const socketManager = RoomSocketManager.getInstance();
+const errorMessage = ref("");
+const fullPath = ref(window.location.origin + route.fullPath);
 
-const settings = ref({
-    maxPlayers: 0,
-    fullPath: "",
-    players: []
+const props = defineProps({
+    roomInfos: Object,
+    errorMessage: String
 });
 
-onMounted(async () => {
-    init();
-}),
+const emit = defineEmits(['startGame', 'leaveRoom', 'updateRoom']);
 
-onUnmounted(() => {
-    socketManager.offUserJoined(getUpdateRoom);
-    socketManager.offUserLeft(getUpdateRoom);
-    socketManager.offRoomUpdated(getUpdateRoom);
-}),
 
 
     // watch route params for changes
     watch(async () => route.params.roomCode, async (newRoomCode) => {
-        init();
+        getUpdateRoom();
+        initSocketHandlers();
     });
 
 
-
-const init = async () => {
-    getUpdateRoom();
-    initSocketHandlers();
-}
-
-const initSocketHandlers = () => {
-    socketManager.joinRoom(roomCode.value, store.getters.username);
-    socketManager.onUserJoined(getUpdateRoom);
-    socketManager.onUserLeft(getUpdateRoom);
-    socketManager.onRoomUpdated(getUpdateRoom);
-}
-
-const getUpdateRoom = async () => {
-    const datas = await api.getRoomInfos(roomCode.value);
-    settings.value.players = datas.room.players;
-    settings.value.fullPath = window.location.origin + route.fullPath
-    settings.value.maxPlayers = datas.room.maxPlayers;
-}
-
-const sendUpdateRoom = async () => {
-    await api.updateRoom(roomCode.value, settings.value.maxPlayers);
+const startGame = () => {
+    emit('startGame').catch((error) => {
+        console.log(error);
+        errorMessage.value = "Erreur : " + error;
+    })
 }
 
 const leaveRoom = async () => {
-    try {
-        let username = store.state.username;
-        await api.leaveRoom(username)
-        router.push({ name: 'home' });
-    } catch (error) {
-        errorMessage.value = "Erreur : " + error;
-    }
-}
-
-const copyPath = () => {
-    navigator.clipboard.writeText(settings.value.fullPath);
+    emit('leaveRoom')
 }
 
 const sliderChange = () => {
-    sendUpdateRoom();
+    emit('updateRoom', props.roomInfos)
 }
+
+const copyPath = () => {
+    navigator.clipboard.writeText(fullPath.value);
+}
+
 </script>
 
 <style scoped>
