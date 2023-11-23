@@ -13,12 +13,14 @@ a,
   transition: 0.4s;
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }  
-}
+body {
+  display: flex;
+  justify-content: center;
+  background: rgb(40,35,122);
+  background: linear-gradient(0deg, rgba(40,35,122,1) 19%, rgba(81,9,121,1) 73%);
+  
+}  
+
 
 :root {
   background-color: black;
