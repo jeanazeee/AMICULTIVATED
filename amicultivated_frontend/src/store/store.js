@@ -10,6 +10,9 @@ export const store = new createStore({
         username: localStorage.getItem('username') || '',
         token: localStorage.getItem('token') || '',
         currentRoomCode: localStorage.getItem('currentRoomCode') || '',
+        currentRoundInfos: localStorage.getItem('currentRoundInfos') || {
+            imageUrl: '',
+        },
     },
     mutations: {
         login(state, {username, token, currentRoomCode}) {
@@ -29,7 +32,11 @@ export const store = new createStore({
         },
         deleteCurrentRoomCode(state) {
             state.currentRoomCode = '';
+        },
+        saveCurrentRoundInfos(state, currentRoundInfos) {
+            state.currentRoundInfos = currentRoundInfos;
         }
+
     },
     actions: {
         login: ({ commit }, { username, password }) => {
@@ -68,13 +75,19 @@ export const store = new createStore({
         deleteCurrentRoomCode: ({ commit }) => {
             commit('deleteCurrentRoomCode');
             localStorage.removeItem('currentRoomCode');
-        }
+        },
+        saveCurrentRoundInfos: ({ commit }, { currentRoundInfos }) => {
+            console.log(currentRoundInfos);
+            commit('saveCurrentRoundInfos', currentRoundInfos);
+            localStorage.setItem('currentRoundInfos', currentRoundInfos);
+        },
     },
     getters: {
         username: state => state.username,
         loggedIn: state => state.loggedIn,
         token: state => state.token,
         currentRoomCode: state => state.currentRoomCode,
+        currentRoundInfos: state => state.currentRoundInfos,
     },
 });
 

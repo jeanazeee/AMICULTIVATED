@@ -2,7 +2,7 @@
 
     <div class="game-container">
         {{ artInfo }}
-        <img :src="artInfo.image" alt="">
+        <img :src="currentRoundInfos.image" alt="">
     </div>
     <div class="restart-room">
         <button class="full-button" @click="restartGame()">Quitter la Room</button>
@@ -11,6 +11,7 @@
 
 <script setup>
 import { onMounted, ref } from 'vue';
+import {useStore} from 'vuex';
 
 const artInfo = ref({});
 const loading = ref(false);
@@ -18,6 +19,9 @@ const props = defineProps({
     roomInfos: Object,
     socketManager: Object
 });
+const store = useStore();
+
+const currentRoundInfos = ref({});
 
 const emit = defineEmits(['restartGame']);
 
@@ -30,8 +34,9 @@ onMounted(() => {
 const initSocketHandlers = () => {
     loading.value = true;
     props.socketManager.onRoundStarted((data) => {
-        artInfo.value = data.artInfo;
-        console.log("Round started", artInfo);
+        currentRoundInfos.value.image = data.artInfo.image;
+        store.dispatch('saveCurrentRoundInfos', { currentRoundInfos: currentRoundInfos.value })
+        console.log("Round started", currentRoundInfos.value.image);
         loading.value = false;
     })
 }
