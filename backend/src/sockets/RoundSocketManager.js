@@ -13,7 +13,7 @@ class RoundSocketManager {
         // Autres initialisations spécifiques au round
     }
 
-    startRound(difficulty, artId) {
+    async startRound(difficulty, artId) {
         difficulty = parseInt(difficulty);
 
         if (difficulty == null) {
@@ -23,12 +23,13 @@ class RoundSocketManager {
             artId = "";
         }
         // Sélectionner une œuvre d'art et envoyer les détails aux joueurs de la room
-        const art = this.selectArtworkForRound(difficulty, artId);
-        roomNamespace.to(roomCode).emit('startGame', {artInfo: art, room: this.roomCode });
+        const art = await this.selectArtworkForRound(difficulty, artId);
+        this.roomNamespace.to(this.roomCode).emit('roundStarted', {artInfo: art, room: this.roomCode });
     }
 
     async selectArtworkForRound(difficulty, artId) {
         const art = await ArtApiService.getRandomArt(difficulty, artId);
+        console.log(art);
         return art;
     }
 

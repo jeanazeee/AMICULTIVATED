@@ -9,6 +9,7 @@ class ArtApiService {
 
         for (let page = 1; page <= pageEnd; page++) {
             try {
+                console.log('Fetching art page:', page);
                 const urlWithToken = `${ArtApiService.url}?paginationToken=${currentPaginationToken}`;
                 const response = await axios.get(urlWithToken);
 
@@ -54,9 +55,6 @@ class ArtApiService {
         }
         const index = Math.floor(Math.random() * arts.length);
         let chosenArt =  arts[index];
-        while (chosenArt.id == artId && (chosenArt.image == null || chosenArt.image == undefined || chosenArt.image == "")) {
-            chosenArt =  arts[Math.floor(Math.random() * arts.length)];
-        }
 
         return chosenArt;
 
