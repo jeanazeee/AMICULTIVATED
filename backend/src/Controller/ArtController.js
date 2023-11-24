@@ -2,7 +2,7 @@ import Logger from "../Logger/Logger.js";
 import Route from "../Route/Route.js";
 import AuthMiddleware from "../Middlewares/AuthMiddleware.js";
 import BaseController from "./BaseController.js";
-import ArtApiService from "../Services/ArtApiRepository.js";
+import ArtApiService from "./../Services/ArtApiService.js";
 
 class ArtController extends BaseController{
 

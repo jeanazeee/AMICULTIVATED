@@ -1,7 +1,7 @@
 <template>
     <RoomStarting v-if="isGameOpen()" :roomInfos="roomInfo" :errorMessage="errorMessage" @startGame="startGame"
         @leaveRoom="leaveRoom" @updateRoom="sendUpdateRoom" />
-    <Game v-if="isGameStarted()" :roomInfos="roomInfo" @restartGame="restartRoom" />
+    <Game v-if="isGameStarted()" :roomInfos="roomInfo" :socketManager="socketManager" @restartGame="leaveRoom" />
 </template>
 
 <script setup>
@@ -23,8 +23,8 @@ const api = new API(store);
 const socketManager = RoomSocketManager.getInstance();
 
 onMounted(async () => {
-    await getNewRoomInfo();
     initSocketHandlers();
+    await getNewRoomInfo();
 });
 
 onUnmounted(() => {
@@ -57,7 +57,6 @@ const isGameOpen = () => {
 const startGame = async () => {
     try {
         await api.startGame(roomCode.value);
-        getNewRoomInfo();
     } catch (error) {
         handleError(error);
     }
@@ -84,7 +83,7 @@ const restartRoom = async () => {
 
 
 const initSocketHandlers = () => {
-    socketManager.joinRoom(roomCode.value, store.getters.username);
+    socketManager.joinRoom(roomCode.value);
     socketManager.onUserJoined(getNewRoomInfo);
     socketManager.onUserLeft(getNewRoomInfo);
     socketManager.onRoomUpdated(getNewRoomInfo);
@@ -98,6 +97,5 @@ const releaseSocketHandlers = () => {
     socketManager.offRoomUpdated(getNewRoomInfo);
     socketManager.offGameStarted(getNewRoomInfo);
 }
-
 
 </script>

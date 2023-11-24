@@ -55,19 +55,8 @@ const props = defineProps({
 const emit = defineEmits(['startGame', 'leaveRoom', 'updateRoom']);
 
 
-
-    // watch route params for changes
-    watch(async () => route.params.roomCode, async (newRoomCode) => {
-        getUpdateRoom();
-        initSocketHandlers();
-    });
-
-
 const startGame = () => {
-    emit('startGame').catch((error) => {
-        console.log(error);
-        errorMessage.value = "Erreur : " + error;
-    })
+    emit('startGame')
 }
 
 const leaveRoom = async () => {

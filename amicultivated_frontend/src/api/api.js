@@ -59,8 +59,6 @@ class API {
             };
     
             const response = await this.api.post('room/create', body);
-
-
             if(response.status === 201){
                 let roomCode = response.data.room.code;
                 this.roomSocketManager.joinRoom(roomCode, username);
@@ -69,7 +67,7 @@ class API {
                 throw response;
             }
 
-            return this.store.state.currentRoomCode; 
+            return this.store.state.currentRoomCode;
         } catch (error) {
             this.leaveRoom(username);
             console.error('Error creating room:', error);
