@@ -10,8 +10,9 @@ export const store = new createStore({
         username: localStorage.getItem('username') || '',
         token: localStorage.getItem('token') || '',
         currentRoomCode: localStorage.getItem('currentRoomCode') || '',
-        currentRoundInfos: localStorage.getItem('currentRoundInfos') || {
+        currentRoundInfos: JSON.parse(localStorage.getItem('currentRoundInfos')) || {
             imageUrl: '',
+            answers: [],
         },
     },
     mutations: {
@@ -35,8 +36,13 @@ export const store = new createStore({
         },
         saveCurrentRoundInfos(state, currentRoundInfos) {
             state.currentRoundInfos = currentRoundInfos;
+        },
+        deleteCurrentRoundInfos(state) {
+            state.currentRoundInfos = {
+                imageUrl: '',
+                answers: [],
+            };
         }
-
     },
     actions: {
         login: ({ commit }, { username, password }) => {
@@ -72,14 +78,17 @@ export const store = new createStore({
             localStorage.setItem('currentRoomCode', currentRoomCode);
             commit('setCurrentRoomCode', currentRoomCode);
         },
-        deleteCurrentRoomCode: ({ commit }) => {
+        deleteRoomInfos: ({ commit }) => {
             commit('deleteCurrentRoomCode');
             localStorage.removeItem('currentRoomCode');
+
+            commit('deleteCurrentRoundInfos');
+            localStorage.removeItem('currentRoundInfos');
         },
         saveCurrentRoundInfos: ({ commit }, { currentRoundInfos }) => {
-            console.log(currentRoundInfos);
+
             commit('saveCurrentRoundInfos', currentRoundInfos);
-            localStorage.setItem('currentRoundInfos', currentRoundInfos);
+            localStorage.setItem('currentRoundInfos', JSON.stringify(currentRoundInfos));
         },
     },
     getters: {
