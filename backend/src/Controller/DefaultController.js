@@ -9,7 +9,7 @@ class DefaultController extends BaseController{
     defineRoutes() {
         return [
             new Route("/", "get", (req, res) => this.defaultRoute(req, res)),
-            new Route("/secured", "all", (req, res) => this.defaultSecured(req, res), AuthMiddleware.verifyToken)
+            new Route("/secured", "get", (req, res) => this.defaultSecured(req, res), AuthMiddleware.verifyToken)
         ];
     }
     constructor(app) {
