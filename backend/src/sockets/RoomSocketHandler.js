@@ -1,6 +1,7 @@
 import Logger from "../Logger/Logger.js";
 import RoomRepository from "../Repository/RoomRepository.js";
 import UserRepository from "../Repository/UserRepository.js";
+import RoundSocketManager from "./RoundSocketManager.js";
 
 class RoomSocketHandler {
 
@@ -18,7 +19,7 @@ class RoomSocketHandler {
     setupRoomNamespace() {
         const roomNamespace = this.io.of("/room");
         roomNamespace.on("connection", (socket) => {
-            socket.on("joinRoom", ({ roomCode, username })  => {
+            socket.on("joinRoom", ({ roomCode })  => {
                 socket.join(roomCode);
                 Logger.info(`Utilisateur ${socket.id} a rejoint la room: ${roomCode}`);
                 // Informer les autres membres de la room
@@ -39,9 +40,10 @@ class RoomSocketHandler {
                 });
 
                 // gerer le lancement de la partie
-                socket.on("startGame", async ({ roomCode }) => {
+                socket.on("startGame", async ({ roomCode, difficulty, artId }) => {
                     Logger.info(`Utilisateur ${socket.id} a lancé la partie de la room: ${roomCode}`);
-                    roomNamespace.to(roomCode).emit('startGame', { room: roomCode });
+                    const roundSocketManager = new RoundSocketManager(this.io, roomCode);
+                    roundSocketManager.startRound(difficulty, artId);
                 });
             });
 
@@ -52,6 +54,7 @@ class RoomSocketHandler {
             });
         });
     }
+
 }
 
 export default RoomSocketHandler;
