@@ -23,17 +23,35 @@ class RoundSocketManager {
             artId = "";
         }
         // Sélectionner une œuvre d'art et envoyer les détails aux joueurs de la room
-        const art = await this.selectArtworkForRound(difficulty, artId);
-        this.roomNamespace.to(this.roomCode).emit('roundStarted', {artInfo: art, room: this.roomCode });
+        const chosenArtList = await this.selectArtworkForRound(difficulty, artId);
+        this.roomNamespace.to(this.roomCode).emit('roundStarted', {artInfo: chosenArtList, room: this.roomCode });
     }
 
     async selectArtworkForRound(difficulty, artId) {
-        const art = await ArtApiService.getRandomArt(difficulty, artId);
-        console.log(art);
-        return art;
+        let pageStart = 1;
+        let pageEnd = 3;
+        if(difficulty == 1){
+            pageStart = 4;
+            pageEnd = 6;
+        }else if(difficulty >= 2){
+            pageStart = 7;
+            pageEnd = 9;
+        }
+
+        const artList = await ArtApiService.getArt(pageStart, pageEnd);
+
+        // chose 4 random arts from the list
+        const chosenArtList = [];
+        for(let i = 0; i < 4; i++){
+            const index = Math.floor(Math.random() * artList.data.length);
+            const chosenArt = artList.data[index];
+            console.log(chosenArt.title);
+            chosenArtList.push(chosenArt);
+        }
+
+        return chosenArtList;
     }
 
-    // Autres méthodes liées aux rounds
 }
 
 export default RoundSocketManager;

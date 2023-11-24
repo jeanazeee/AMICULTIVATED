@@ -19,73 +19,61 @@ class RoomSocketHandler {
 
     setupRoomNamespace() {
         const roomNamespace = this.io.of("/room");
-        roomNamespace.on("connection", (socket) => {
+        roomNamespace.on("connection", (socket) => {    
             socket.on("joinRoom", ({ roomCode }) => {
                 socket.join(roomCode);
-                Logger.info(`Utilisateur ${socket.id} a rejoint la room: ${roomCode}`);
-                // Informer les autres membres de la room
                 roomNamespace.to(roomCode).emit('userJoined', { user: socket.id, room: roomCode });
+                Logger.info(`Utilisateur ${socket.id} a rejoint la room: ${roomCode}`);
+                this.attachRoomEventListeners(socket, roomCode); // Attacher les écouteurs d'événements spécifiques à la room
 
-                // Gérer la déconnexion de l'utilisateur
                 socket.on("disconnect", () => {
-                    socket.leave(roomCode);
-                    Logger.info(`Utilisateur ${socket.id} a deconecté la room: ${roomCode}`);
-                    // Informer les autres membres de la room
-                    roomNamespace.to(roomCode).emit('userLeft', { user: socket.id, room: roomCode });
+                    Logger.info(`Utilisateur ${socket.id} a déconnecté de la room: ${roomCode}`);
+
+                    this.handleLeaveRoom(socket, roomCode);
                 });
-
-                // gerer les changements dans les parametres de la room
-                socket.on("updateRoom", async ({ roomCode, maxPlayers }) => {
-                    Logger.info(`Utilisateur ${socket.id} a changé les parametres de la room: ${roomCode}`);
-                    roomNamespace.to(roomCode).emit('updateRoom', { room: roomCode });
-                });
-
-                // gerer le lancement de la partie
-                socket.on("startGame", async ({ roomCode, difficulty, artId }) => {
-                    Logger.info(`Utilisateur ${socket.id} a lancé la partie de la room: ${roomCode}`);
-                    const roundSocketManager = new RoundSocketManager(roomNamespace, roomCode);
-                    roomNamespace.to(roomCode).emit('gameStarting', { room: roomCode });
-                    // emit next round event
-                    roundSocketManager.startRound(difficulty, artId);
-                });
-
-
-                socket.on("nextRound", async ({ roomCode, difficulty, artId }) => {
-                    Logger.info(`Utilisateur ${socket.id} a lancé la partie de la room: ${roomCode}`);
-                    const roundSocketManager = new RoundSocketManager(this.io, roomCode);
-                    roundSocketManager.startRound(difficulty, artId);
-                });
-
             });
 
-            socket.on("leaveRoom", async ({ roomCode, username }) => {
-                socket.leave(roomCode);
+            socket.on("leaveRoom", ({ roomCode, username }) => {
                 Logger.info(`Utilisateur ${socket.id} a quitté la room: ${roomCode}`);
-                roomNamespace.to(roomCode).emit('userLeft', { user: socket.id, room: roomCode });
+
+                this.handleLeaveRoom(socket, roomCode);
             });
         });
     }
 
+    attachRoomEventListeners(socket, roomCode) {
+        const roomNamespace = this.io.of("/room");
+        socket.on("updateRoom", async ({ roomCode, maxPlayers }) => {
+            Logger.info(`Utilisateur ${socket.id} a changé les paramètres de la room: ${roomCode}`);
+            roomNamespace.to(roomCode).emit('updateRoom', { room: roomCode });
+        });
 
+        socket.on("startGame", async ({ roomCode, difficulty, artId }) => {
+            Logger.info(`Utilisateur ${socket.id} a lancé la partie de la room: ${roomCode}`);
+            const roundSocketManager = new RoundSocketManager(roomNamespace, roomCode);
+            roomNamespace.to(roomCode).emit('gameStarting', { room: roomCode });
+            roundSocketManager.startRound(difficulty, artId);
+            // roomNamespace.to(roomCode).emit('roundStarted', {artInfo: data, room: roomCode });
+        });
 
-    async startRound(roomNamespace, roomCode, difficulty, artId) {
-        difficulty = parseInt(difficulty);
-
-        if (difficulty == null) {
-            difficulty = 0;
-        }
-        if (artId == null) {
-            artId = "";
-        }
-        // Sélectionner une œuvre d'art et envoyer les détails aux joueurs de la room
-        const art = await this.selectArtworkForRound(difficulty, artId);
-        console.log("emmiting roundStarted")
-        roomNamespace.to(roomCode).emit('roundStarted', {artInfo: art, room: roomCode });
+        socket.on("nextRound", async ({ roomCode, difficulty, artId }) => {
+            Logger.info(`Utilisateur ${socket.id} a lancé un nouveau round dans la room: ${roomCode}`);
+            const roundSocketManager = new RoundSocketManager(this.io, roomCode);
+            roundSocketManager.startRound(difficulty, artId);
+        });
     }
 
-    async selectArtworkForRound(difficulty, artId) {
-        const art = await ArtApiService.getRandomArt(difficulty, artId);
-        return art;
+    handleLeaveRoom(socket, roomCode) {
+        const roomNamespace = this.io.of("/room");
+        this.detachRoomEventListeners(socket);
+        socket.leave(roomCode);
+        roomNamespace.to(roomCode).emit('userLeft', { user: socket.id, room: roomCode });
+    }
+
+    detachRoomEventListeners(socket) {
+        socket.removeAllListeners("updateRoom");
+        socket.removeAllListeners("startGame");
+        socket.removeAllListeners("nextRound");
     }
 
 }

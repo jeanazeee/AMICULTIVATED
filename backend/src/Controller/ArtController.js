@@ -81,7 +81,6 @@ class ArtController extends BaseController{
 
         let arts = await ArtApiService.getArt(pageStartInt, pageEndInt);
 
-        console.log(arts);
 
 
         return res.status(200).json(arts);

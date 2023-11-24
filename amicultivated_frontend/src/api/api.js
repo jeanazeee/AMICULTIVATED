@@ -43,7 +43,7 @@ class API {
             if(response.status === 200){
                 let roomCode = response.data.code;
                 this.roomSocketManager.leaveRoom(roomCode, username);
-                this.store.dispatch('deleteCurrentRoomCode'); 
+                this.store.dispatch('deleteRoomInfos'); 
             }
         }catch(error){
             console.error('Error leaving room:', error);
@@ -61,7 +61,6 @@ class API {
             const response = await this.api.post('room/create', body);
             if(response.status === 201){
                 let roomCode = response.data.room.code;
-                this.roomSocketManager.joinRoom(roomCode, username);
                 this.store.dispatch('setCurrentRoomCode', { currentRoomCode: roomCode })
             }else{
                 throw response;
