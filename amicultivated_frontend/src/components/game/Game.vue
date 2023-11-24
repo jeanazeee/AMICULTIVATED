@@ -24,33 +24,35 @@
                     <button>1988</button>
                     <button>1988</button>
                 </div>
-            </div>
-            <div class="next">
-                    <button class="full-button" @click="next()" >Partie suivante</button>
+                <div class="answers">
+                        <button class="answer" v-for="answer in currentRoundInfos.answers">
+                            {{ answer }}
+                        </button>
+                    </div>
             </div>
         </div>
         
     </div>
 
-    
+    <div class="leave-room">
+        <button class="full-button" @click="leaveRoom()">Quitter la Room</button>
+    </div>
 </template>
 
 <script setup>
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { onMounted, ref } from 'vue';
-import {useStore} from 'vuex';
+import { useStore } from 'vuex';
 
 const store = useStore();
 const router = useRouter();
 const emit = defineEmits(['leaveRoom']);
-const artInfo = ref({});
 const loading = ref(false);
 const props = defineProps({
     roomInfos: Object,
     socketManager: Object
 });
-const store = useStore();
 
 const currentRoundInfos = ref({});
 
@@ -58,20 +60,40 @@ const currentRoundInfos = ref({});
 
 onMounted(() => {
     initSocketHandlers();
+    currentRoundInfos.value = store.getters.currentRoundInfos;
 });
 
 const initSocketHandlers = () => {
     loading.value = true;
     props.socketManager.onRoundStarted((data) => {
-        currentRoundInfos.value.image = data.artInfo.image;
+        console.log("Round started");
+        formatRoundInfos(data.artInfo);
+        console.log(currentRoundInfos.value);
         store.dispatch('saveCurrentRoundInfos', { currentRoundInfos: currentRoundInfos.value })
-        console.log("Round started", currentRoundInfos.value.image);
         loading.value = false;
     })
 }
 
 const restartGame = () => {
     emit('restartGame');
+}
+
+const formatRoundInfos = (artsInfo) => {
+    currentRoundInfos.value.answers = [];
+    currentRoundInfos.value.image = artsInfo[0].image;
+    for (let i = 0; i < artsInfo.length; i++) {
+        currentRoundInfos.value.answers.push(artsInfo[i].title);
+    }
+    shuffleArray(currentRoundInfos.value.answers);
+}
+
+const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
 }
 </script>
 
@@ -80,6 +102,7 @@ const restartGame = () => {
 .left {
     float: left;
 }
+
 .title {
     text-align: center;
     font-size: 2rem;
@@ -138,8 +161,9 @@ const restartGame = () => {
     width: 7em;
     background-color: purple;
     color: white;
-    border-radius:5px;
+    border-radius: 5px;
 }
+
 .response {
     margin: auto;
     width: 100%;
