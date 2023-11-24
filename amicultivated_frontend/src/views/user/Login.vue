@@ -12,7 +12,7 @@
                     <input type="password" name="password" id="password" placeholder="" v-model="password">
 
                 </div>
-                <button class="sign" @click="login()">Create account</button>
+                <button class="sign" @click="login()">Log In</button>
             </div>
             <br>
             <div class="line"></div>
@@ -52,6 +52,7 @@ const login = () => {
     height: 580px;
     display: flex;  
     margin: auto;
+    margin-top: 3em;
     justify-content: center;
     align-items: center;
     background: rgb(17, 24, 39);

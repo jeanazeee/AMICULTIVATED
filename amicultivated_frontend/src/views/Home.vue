@@ -1,25 +1,24 @@
-
-
 <template>
   <main>
     <div class="title">
       <h1>Bienvenue sur AMICULTIVATED, l'application pour tester vos connaissances en matière de peinture .</h1>
     </div>
-    <div class="main-div">
-      <div class="main-image">
-        <img src="../assets/art.jpg">
+      <div class="main-div">
+        <div class="main-image">
+          <img src="../assets/art.jpg">
+        </div>
+        <div class="main-join">
+          <h2>Entrez le code de la partie</h2>
+          <input placeholder="Ex: H68UYZ"/>
+          <button>Rejoindre la room</button>
+        </div>
       </div>
-      <div class="main-join">
-        <h2>Entrez le code de la partie</h2>
-        <input placeholder="Ex: H68UYZ"/>
-        <button>Rejoindre la room</button>
-      </div>
-    </div>
   </main>
 </template>
 
 
 <script setup>
+
 </script>
 
 <style scoped>
@@ -33,16 +32,52 @@
   width: 70%;
   font-size:xx-large;
 }
+
+.main {
+  display: inline-block;
+}
+
+.games {
+  width: 15%;
+  float: left;
+  color: black;
+  padding: 1em;
+  background: white;
+  border-radius: 10px;
+  margin-bottom: 5em;
+  margin-left: 4em;
+
+}
+.games button {
+  float: right;
+  margin-left: 2em;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.games h2 {
+  color: purple;
+  font-size: large;
+  font-weight: 600;
+}
+
+.games-li {
+  margin-top: 2em;
+}
+
+.games-li button {
+  background-color: greenyellow;
+  font-weight: 900;
+}
 .main-div {
-    width: 800px;
-    height: 400px;
-    object-fit: cover;
-    display: flex;
-    margin: auto;
-    background: white;
-    box-shadow: 0px 0px 3px 3px 100px 3px blue;
-    border-radius: 10px;
-    margin-bottom: 5em;
+  width: 60%;
+  height: 400px;
+  object-fit: cover;
+  display: flex;
+  margin:auto;
+  background: white;
+  border-radius: 10px;
+  margin-bottom: 5em;
 }
 
 .main-join {

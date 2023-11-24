@@ -54,6 +54,7 @@ const signup = () => {
     height: 580px;
     display: flex;  
     margin: auto;
+    margin-top: 3em;
     justify-content: center;
     align-items: center;
     background: rgb(17, 24, 39);
