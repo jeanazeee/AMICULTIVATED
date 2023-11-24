@@ -38,20 +38,36 @@
 <script setup>
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import { onMounted, ref } from 'vue';
 
 const store = useStore();
 const router = useRouter();
 const emit = defineEmits(['leaveRoom']);
-
+const artInfo = ref({});
+const loading = ref(false);
 const props = defineProps({
     roomInfos: Object,
-    errorMessage: String
+    socketManager: Object
 });
 
-const leaveRoom = async () => {
-    emit('leaveRoom')
+
+
+onMounted(() => {
+    initSocketHandlers();
+});
+
+const initSocketHandlers = () => {
+    loading.value = true;
+    props.socketManager.onRoundStarted((data) => {
+        artInfo.value = data.artInfo;
+        console.log("Round started", artInfo);
+        loading.value = false;
+    })
 }
 
+const restartGame = () => {
+    emit('restartGame');
+}
 </script>
 
 <style scoped>

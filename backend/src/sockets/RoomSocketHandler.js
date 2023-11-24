@@ -2,6 +2,7 @@ import Logger from "../Logger/Logger.js";
 import RoomRepository from "../Repository/RoomRepository.js";
 import UserRepository from "../Repository/UserRepository.js";
 import RoundSocketManager from "./RoundSocketManager.js";
+import ArtApiService from "../Services/ArtApiService.js";
 
 class RoomSocketHandler {
 
@@ -19,7 +20,7 @@ class RoomSocketHandler {
     setupRoomNamespace() {
         const roomNamespace = this.io.of("/room");
         roomNamespace.on("connection", (socket) => {
-            socket.on("joinRoom", ({ roomCode })  => {
+            socket.on("joinRoom", ({ roomCode }) => {
                 socket.join(roomCode);
                 Logger.info(`Utilisateur ${socket.id} a rejoint la room: ${roomCode}`);
                 // Informer les autres membres de la room
@@ -42,17 +43,49 @@ class RoomSocketHandler {
                 // gerer le lancement de la partie
                 socket.on("startGame", async ({ roomCode, difficulty, artId }) => {
                     Logger.info(`Utilisateur ${socket.id} a lancé la partie de la room: ${roomCode}`);
+                    const roundSocketManager = new RoundSocketManager(roomNamespace, roomCode);
+                    roomNamespace.to(roomCode).emit('gameStarting', { room: roomCode });
+                    // emit next round event
+                    roundSocketManager.startRound(difficulty, artId);
+                });
+
+
+                socket.on("nextRound", async ({ roomCode, difficulty, artId }) => {
+                    Logger.info(`Utilisateur ${socket.id} a lancé la partie de la room: ${roomCode}`);
                     const roundSocketManager = new RoundSocketManager(this.io, roomCode);
                     roundSocketManager.startRound(difficulty, artId);
                 });
+
             });
 
-            socket.on("leaveRoom", async ({roomCode, username}) => {
+            socket.on("leaveRoom", async ({ roomCode, username }) => {
                 socket.leave(roomCode);
                 Logger.info(`Utilisateur ${socket.id} a quitté la room: ${roomCode}`);
                 roomNamespace.to(roomCode).emit('userLeft', { user: socket.id, room: roomCode });
             });
         });
+    }
+
+
+
+    async startRound(roomNamespace, roomCode, difficulty, artId) {
+        difficulty = parseInt(difficulty);
+
+        if (difficulty == null) {
+            difficulty = 0;
+        }
+        if (artId == null) {
+            artId = "";
+        }
+        // Sélectionner une œuvre d'art et envoyer les détails aux joueurs de la room
+        const art = await this.selectArtworkForRound(difficulty, artId);
+        console.log("emmiting roundStarted")
+        roomNamespace.to(roomCode).emit('roundStarted', {artInfo: art, room: roomCode });
+    }
+
+    async selectArtworkForRound(difficulty, artId) {
+        const art = await ArtApiService.getRandomArt(difficulty, artId);
+        return art;
     }
 
 }

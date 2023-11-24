@@ -39,7 +39,9 @@ class RoomSocketManager {
 
     startGame(roomCode) {
         this.socket.emit('startGame', {
-            roomCode: roomCode
+            roomCode: roomCode,
+            difficulty: 0,
+            artId: ""
         });
     }
 
@@ -56,7 +58,15 @@ class RoomSocketManager {
     }
 
     onGameStarted(callback) {
-        this.socket.on('startGame', callback);
+        this.socket.on('gameStarting', callback);
+    }
+
+    onRoundStarted(callback){
+        this.socket.on('roundStarted', callback);
+    }
+
+    onRoundEnded(callback){
+        this.socket.on('roundEnded', callback);
     }
 
     offUserJoined(callback) {
@@ -72,7 +82,15 @@ class RoomSocketManager {
     }
 
     offGameStarted(callback) {
-        this.socket.off('startGame', callback);
+        this.socket.off('gameStarting', callback);
+    }
+
+    offRoundStarted(callback){
+        this.socket.off('roundStarted', callback);
+    }
+
+    offRoundEnded(callback){
+        this.socket.off('roundEnded', callback);
     }
 }
 
