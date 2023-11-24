@@ -16,7 +16,7 @@
             </div>
             <div class="art-frame">
                 <div class="img">
-                    <img src="./../../assets/art.jpg">
+                    <img :src="currentRoundInfos.image">
                 </div>
                 <div class="response">
                     <button>1988</button>
@@ -39,6 +39,7 @@
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { onMounted, ref } from 'vue';
+import {useStore} from 'vuex';
 
 const store = useStore();
 const router = useRouter();
@@ -49,6 +50,9 @@ const props = defineProps({
     roomInfos: Object,
     socketManager: Object
 });
+const store = useStore();
+
+const currentRoundInfos = ref({});
 
 
 
@@ -59,8 +63,9 @@ onMounted(() => {
 const initSocketHandlers = () => {
     loading.value = true;
     props.socketManager.onRoundStarted((data) => {
-        artInfo.value = data.artInfo;
-        console.log("Round started", artInfo);
+        currentRoundInfos.value.image = data.artInfo.image;
+        store.dispatch('saveCurrentRoundInfos', { currentRoundInfos: currentRoundInfos.value })
+        console.log("Round started", currentRoundInfos.value.image);
         loading.value = false;
     })
 }
