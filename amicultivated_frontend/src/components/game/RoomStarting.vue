@@ -90,7 +90,6 @@ const copyPath = () => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     width: 100vw;
 }
 
@@ -111,13 +110,11 @@ const copyPath = () => {
     align-items: center;
     width: 20%;
     color: white;
-    height: 100%;
     overflow-y: visible;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .player-card {
-    height: 100%;
     font-size: 2rem;
 }
 
@@ -198,7 +195,7 @@ const copyPath = () => {
     font-size: 1rem;
     text-align: center;
     /* hide disabled style */
-    background-color: white;
+    background-color: grey;
 }
 
 .copy-link button {
@@ -211,5 +208,9 @@ const copyPath = () => {
     cursor: pointer;
     transition: background-color .3s ease-in-out;
     border-radius: 6px;
+}
+
+.leave-room button {
+    margin: 1em;
 }
 </style>

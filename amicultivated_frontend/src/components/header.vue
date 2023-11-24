@@ -5,7 +5,6 @@
         </div>
         <div class="items">
             <ul>
-                <li><a href="/room">Créer une partie</a></li>
                 <li><a href="/profil">Profil</a></li>
                 <li><a href="/Leaderboard">Leaderboard</a></li>
             </ul>

@@ -1,33 +1,98 @@
 <template>
   <main>
+    <div class="noroom" v-if="!hasCurrentRoom()">
     <div class="title">
       <h1>Bienvenue sur AMICULTIVATED, l'application pour tester vos connaissances en matière de peinture .</h1>
     </div>
-      <div class="main-div">
-        <div class="main-image">
-          <img src="../assets/art.jpg">
+    <div class="main-div"  >
+      <div class="main-image">
+        <img src="../assets/art.jpg">
+      </div>
+      <div class="main-game">
+        <div class="error">
+            <p id="error-message" v-if="errorMessage">{{ errorMessage }}</p>
         </div>
         <div class="main-join">
           <h2>Entrez le code de la partie</h2>
-          <input placeholder="Ex: H68UYZ"/>
-          <button>Rejoindre la room</button>
+          <input type="text" name="" id="" v-model="roomCode" placeholder="Ex: H68UYZ"/>
+          <button @click="joinRoom()">Rejoindre la room</button>
+        </div>
+        <div class="main-create">
+          <h2>ou</h2>
+          <button  @click="createRoom()">Créer une room</button>
         </div>
       </div>
+    </div>
+  </div>
+    <div class="leave-room" v-if="hasCurrentRoom()">
+      <button class="full-button" @click="leaveRoom()">Quitter la Room</button>
+      <p id="room-code">Votre code de Room est : {{ store.state.currentRoomCode }}</p>
+    </div>
   </main>
 </template>
 
 
 <script setup>
+import { ref } from 'vue'
+import API from './../api/api.js'
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 
+
+const roomCode = ref()
+const store = useStore();
+const api = new API(store);
+const errorMessage = ref('')
+const router = useRouter();
+
+
+const hasCurrentRoom = () => {
+    return store.state.currentRoomCode != "";
+}
+
+const joinRoom = async () => {
+    try {
+        if(roomCode.value == "") throw new Error("Le code de la room ne peut pas être vide");
+        let username = store.state.username;
+        await api.joinRoom(roomCode.value, username)
+        router.push({ name: 'room', params: { roomCode: roomCode.value } });
+    } catch (error) {
+        errorMessage.value = "Erreur : " + error;
+    }
+}
+
+
+const leaveRoom = async () => {
+    try {
+        let username = store.state.username;
+        await api.leaveRoom(username)
+        router.push({ name: 'home' });
+    } catch (error) {
+        handleError(error);
+    }
+}
+
+const createRoom = async () => {
+    try {
+        let username = store.state.username;
+        roomCode.value = await api.createRoom(username);
+        router.push({ name: 'room', params: { roomCode: roomCode.value } });
+    } catch (error) {
+        console.error(error);
+        errorMessage.value = "Erreur : " + error.response.data.message;
+    }
+}
 </script>
 
 <style scoped>
-
+.error {
+  color: red;
+}
 .title {
   color: white;
   margin: 0 auto;
   text-align: center;
-  padding: 1em;
+  padding-bottom: 1em;
   font-weight: 900;
   width: 70%;
   font-size:xx-large;
@@ -83,6 +148,10 @@
 .main-join {
   width: 50%;
 }
+
+.main-image {
+  width: 50%;
+}
 .main-image img {
   /* The image used */
   border-radius: 10px 0px 0px 10px;
@@ -94,9 +163,9 @@
 .main-join {
   width: 100%;
 }
-.main-join h2 {
+h2 {
   margin: 10px;
-  font-size: 3em;
+  font-size: 2em;
   font-weight: bold;
   color: purple;
 }
@@ -117,7 +186,6 @@
 
 .main-join button {
   margin: 0 auto;
-  margin-top: 3em;
   background-color: purple;
   color: white;
   display: block;
@@ -129,4 +197,20 @@
   text-transform: uppercase;
   padding-right:1em;
 }
+
+.main-create button {
+  margin: 0 auto;
+  background-color: purple;
+  color: white;
+  display: block;
+  border: 1px solid black;
+  border-radius: 0%;
+  padding: 10px;
+  width: 90%;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding-right:1em;
+}
+
+
 </style>

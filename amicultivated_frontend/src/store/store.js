@@ -6,7 +6,7 @@ const authApi = new AuthAPI();
 
 export const store = new createStore({
     state: {
-        loggedIn: (localStorage.getItem('usename') !== null && localStorage.getItem('token') !== null),
+        loggedIn: (localStorage.getItem('username') !== null && localStorage.getItem('token') !== null),
         username: localStorage.getItem('username') || '',
         token: localStorage.getItem('token') || '',
         currentRoomCode: localStorage.getItem('currentRoomCode') || '',

@@ -5,7 +5,6 @@ import Signup from '../views/user/Signup.vue'
 import Profil from '../views/user/Profil.vue'
 import Room from '../views/game/room.vue'
 import {store} from '../store/store.js'
-import Room from '../views/game/Room.vue'
 import API from '../api/api'
 
 
