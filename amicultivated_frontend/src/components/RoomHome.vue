@@ -14,7 +14,7 @@
         </div>
         <div class="leave-room" v-if="hasCurrentRoom()">
             <button class="full-button" @click="leaveRoom()">Quitter la Room</button>
-            <p id="room-code">Votre code de Room est : {{ store.state.currentRoomCode }}</p>
+            <p id="room-code">Votre code de Room est : {{ store.getters.currentRoomCode }}</p>
         </div>
     </div>
 </template>
@@ -34,13 +34,13 @@ const router = useRouter();
 
 
 const hasCurrentRoom = () => {
-    return store.state.currentRoomCode != "";
+    return store.getters.currentRoomCode != "";
 }
 
 const joinRoom = async () => {
     try {
         if(roomCode.value == "") throw new Error("Le code de la room ne peut pas être vide");
-        let username = store.state.username;
+        let username = store.getters.user.username;
         await api.joinRoom(roomCode.value, username)
         router.push({ name: 'room', params: { roomCode: roomCode.value } });
     } catch (error) {
@@ -51,7 +51,7 @@ const joinRoom = async () => {
 
 const leaveRoom = async () => {
     try {
-        let username = store.state.username;
+        let username = store.getters.user.username;
         await api.leaveRoom(username)
     } catch (error) {
         errorMessage.value = "Erreur : " + error;
@@ -60,7 +60,7 @@ const leaveRoom = async () => {
 
 const createRoom = async () => {
     try {
-        let username = store.state.username;
+        let username = store.getters.user.username;
         roomCode.value = await api.createRoom(username);
         router.push({ name: 'room', params: { roomCode: roomCode.value } });
     } catch (error) {

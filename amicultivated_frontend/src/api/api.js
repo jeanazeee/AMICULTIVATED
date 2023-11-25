@@ -42,7 +42,7 @@ class API {
             });
             if(response.status === 200){
                 let roomCode = response.data.code;
-                this.roomSocketManager.leaveRoom(roomCode, username);
+                this.roomSocketManager.leaveRoom(roomCode, this.store.getters.user);
                 this.store.dispatch('deleteRoomInfos'); 
             }
         }catch(error){
@@ -66,7 +66,7 @@ class API {
                 throw response;
             }
 
-            return this.store.state.currentRoomCode;
+            return this.store.getters.currentRoomCode;
         } catch (error) {
             this.leaveRoom(username);
             console.error('Error creating room:', error);

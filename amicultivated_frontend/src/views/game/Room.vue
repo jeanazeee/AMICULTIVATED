@@ -64,7 +64,7 @@ const startGame = async () => {
 
 const leaveRoom = async () => {
     try {
-        let username = store.state.username;
+        let username = store.getters.user.username;
         await api.leaveRoom(username)
         router.push({ name: 'home' });
     } catch (error) {
@@ -83,7 +83,7 @@ const restartRoom = async () => {
 
 
 const initSocketHandlers = () => {
-    socketManager.joinRoom(roomCode.value);
+    socketManager.joinRoom(roomCode.value, store.getters.user);
     socketManager.onUserJoined(getNewRoomInfo);
     socketManager.onUserLeft(getNewRoomInfo);
     socketManager.onRoomUpdated(getNewRoomInfo);

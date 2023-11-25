@@ -16,17 +16,17 @@ class RoomSocketManager {
         return this.instance;
     }
 
-    joinRoom(roomCode, userName) {
+    joinRoom(roomCode, user) {
         this.socket.emit('joinRoom', {
             roomCode: roomCode,
-            username: userName
+            user: user
         });
     }
 
-    leaveRoom(roomCode, userName) {
+    leaveRoom(roomCode, user) {
         this.socket.emit('leaveRoom', {
             roomCode: roomCode,
-            username: userName
+            user: user
         });
     }
 
@@ -42,6 +42,15 @@ class RoomSocketManager {
             roomCode: roomCode,
             difficulty: 0,
             artId: ""
+        });
+    }
+
+    submitAnswer(roomCode, user, answer) {
+        console.log("Answering round Emit");
+        this.socket.emit('submitAnswer', {
+            roomCode: roomCode,
+            user: user,
+            answer: answer
         });
     }
 

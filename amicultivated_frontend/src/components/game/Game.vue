@@ -25,7 +25,7 @@
                     <button>1988</button>
                 </div>
                 <div class="answers">
-                        <button class="answer" v-for="answer in currentRoundInfos.answers">
+                        <button class="answer" v-for="answer in currentRoundInfos.answers" @click="submitAnswer(answer)">
                             {{ answer }}
                         </button>
                     </div>
@@ -68,7 +68,6 @@ const initSocketHandlers = () => {
     props.socketManager.onRoundStarted((data) => {
         console.log("Round started");
         formatRoundInfos(data.artInfo);
-        console.log(currentRoundInfos.value);
         store.dispatch('saveCurrentRoundInfos', { currentRoundInfos: currentRoundInfos.value })
         loading.value = false;
     })
@@ -94,6 +93,11 @@ const shuffleArray = (array) => {
         array[i] = array[j];
         array[j] = temp;
     }
+}
+
+const submitAnswer = (answer) => {
+    console.log("Answering round");
+    props.socketManager.submitAnswer(store.getters.currentRoomCode,store.getters.user,answer);
 }
 </script>
 
