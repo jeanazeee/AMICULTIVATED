@@ -45,12 +45,25 @@ class RoomSocketManager {
         });
     }
 
-    submitAnswer(roomCode, user, answer) {
-        console.log("Answering round Emit");
+    endGame(roomCode) {
+        this.socket.emit('endGame', {
+            roomCode: roomCode
+        });
+    }
+
+    submitAnswer(roomCode, user, answerId) {
         this.socket.emit('submitAnswer', {
             roomCode: roomCode,
             user: user,
-            answer: answer
+            answerId: answerId
+        });
+    }
+
+    startNextRound(roomCode) {
+        this.socket.emit('nextRound', {
+            roomCode: roomCode,
+            difficulty: 0,
+            artId: ""
         });
     }
 
@@ -78,6 +91,10 @@ class RoomSocketManager {
         this.socket.on('roundEnded', callback);
     }
 
+    onGameEnded(callback){
+        this.socket.on('gameEnded', callback);
+    }
+
     offUserJoined(callback) {
         this.socket.off('userJoined', callback);
     }
@@ -100,6 +117,10 @@ class RoomSocketManager {
 
     offRoundEnded(callback){
         this.socket.off('roundEnded', callback);
+    }
+
+    offGameEnded(callback){
+        this.socket.off('gameEnded', callback);
     }
 }
 

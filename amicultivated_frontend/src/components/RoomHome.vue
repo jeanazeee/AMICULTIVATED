@@ -14,7 +14,7 @@
         </div>
         <div class="leave-room" v-if="hasCurrentRoom()">
             <button class="full-button" @click="leaveRoom()">Quitter la Room</button>
-            <p id="room-code">Votre code de Room est : {{ store.getters.currentRoomCode }}</p>
+            <p id="room-code">Votre code de Room est : {{ store.getters.currentRoomInfos.code }}</p>
         </div>
     </div>
 </template>
@@ -25,7 +25,7 @@ import API from './../api/api.js'
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 
-
+const room = ref()
 const roomCode = ref()
 const store = useStore();
 const api = new API(store);
@@ -34,7 +34,7 @@ const router = useRouter();
 
 
 const hasCurrentRoom = () => {
-    return store.getters.currentRoomCode != "";
+    return store.getters.currentRoomInfos.code != "" || store.getters.currentRoomInfos.code != '';
 }
 
 const joinRoom = async () => {
@@ -61,8 +61,8 @@ const leaveRoom = async () => {
 const createRoom = async () => {
     try {
         let username = store.getters.user.username;
-        roomCode.value = await api.createRoom(username);
-        router.push({ name: 'room', params: { roomCode: roomCode.value } });
+        room.value = await api.createRoom(username);
+        router.push({ name: 'room', params: { roomCode: room.value.code } });
     } catch (error) {
         console.error(error);
         errorMessage.value = "Erreur : " + error.response.data.message;

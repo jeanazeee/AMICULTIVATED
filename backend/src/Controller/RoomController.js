@@ -17,7 +17,8 @@ class RoomController extends BaseController{
             new Route(RoomController.prefix + "/leave", "post", this.leave.bind(this)),
             new Route(RoomController.prefix + "/:roomCode", "get", this.getRoomByCode.bind(this)),
             new Route(RoomController.prefix + "/:roomCode", "put", this.updateRoom.bind(this)),
-            new Route(RoomController.prefix + "/:roomCode/start", "post", this.startGame.bind(this))
+            new Route(RoomController.prefix + "/:roomCode/start", "post", this.startGame.bind(this)),
+            new Route(RoomController.prefix + "/:roomCode/end", "post", this.endGame.bind(this)),
         ];
     }
     
@@ -29,16 +30,20 @@ class RoomController extends BaseController{
 
 
     //This endpoint allow to create room like in web party games
-    // So it will first create the room in db
+    // So it will first create the room in dbF
     // and then the user who created the room is connected to it
     async create(req, res) {
-        const {maxPlayers, username} = req.body;
+        const {maxPlayers, username, maxRounds} = req.body;
         if(maxPlayers == undefined){
             return res.status(400).json({message: "Missing maxPlayers"});
         }
 
         if(username == undefined){
             return res.status(400).json({message: "Missing username"});
+        }
+
+        if(maxRounds == undefined){
+            return res.status(400).json({message: "Missing maxRounds"});
         }
         // generate a five char (number and letters) code for the room that will be use to join it
         let roomCode = this.generateRoomCode();
@@ -56,11 +61,15 @@ class RoomController extends BaseController{
         }
 
         // create the room in db
-        let room = await this.roomRepository.createRoom(roomCode, maxPlayers, status, user.id);
+        let room = await this.roomRepository.createRoom(roomCode, maxPlayers, maxRounds, status, user.id);
 
         await this.userRepository.addRoomToUser(username, room.id);
 
-        // connect the user to the room
+        try {
+            room = await this.roomRepository.getRoomByCode(roomCode);
+        } catch (error) {
+            return res.status(400).json({ message: "Room not found" });
+        }
 
         res.status(201).json({message: "Room created successfully", room: room});
     }
@@ -89,14 +98,20 @@ class RoomController extends BaseController{
             return res.status(400).json({ message: "User is already in a room" });
         }
 
-        let room = await this.roomRepository.getRoomByCode(roomCode);
+        try {
+            let room = await this.roomRepository.getRoomByCode(roomCode);
+            await this.userRepository.addRoomToUser(username, room.id);
+        } catch (error) {
+            return res.status(400).json({ message: "Room not found" });
+        }
 
-        await this.userRepository.addRoomToUser(username, room.id);
 
         await this.roomRepository.incrementCurrentPlayerNumber(roomCode);
 
+        const room = await this.roomRepository.getRoomByCode(roomCode);
+        
 
-        res.status(200).json({ message: "Joined room successfully", code: roomCode});
+        res.status(200).json({ message: "Joined room successfully", room: room});
     }
 
 
@@ -136,19 +151,8 @@ class RoomController extends BaseController{
             return res.status(400).json({ message: "Room not found" });
         }
 
-        let roomData = {
-            maxPlayers: room.maxPlayers,
-            currentPlayerNumber: room.currentPlayerNumber,
-            status: room.status,
-            code: room.code,
-            players: []
-        }
 
-        //TODO JUST GET USERNAME
-        roomData.players = (await this.userRepository.getUsersByRoomId(room.id)).map(user => user.username);
-        
-
-        res.status(200).json({ message: "Room found", room: roomData});
+        res.status(200).json({ message: "Room found", room: room});
     }
 
 
@@ -188,7 +192,33 @@ class RoomController extends BaseController{
 
         await this.roomRepository.updateRoomStatus(roomCode, "Started");
 
-        res.status(200).json({ message: "Room updated successfully"});
+        // reset score from all players
+        this.userRepository.resetScoreByRoomId(room.id);
+
+        res.status(200).json({ message: "Room updated successfully", status: "Started"});
+    }
+
+    async endGame(req, res){
+        const {roomCode} = req.params;
+
+        if (!roomCode) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+
+        let room = await this.roomRepository.getRoomByCode(roomCode);
+
+        if(!room){
+            return res.status(400).json({ message: "Room not found" });
+        }
+
+        if(room.status != "Started"){
+            return res.status(400).json({ message: "Room is not started" });
+        }
+
+        await this.roomRepository.updateRoomStatus(roomCode, "Finished");
+        this.userRepository.resetScoreByRoomId(room.id);
+
+        res.status(200).json({ message: "Room updated successfully", status: "Finished"});
     }
 
 

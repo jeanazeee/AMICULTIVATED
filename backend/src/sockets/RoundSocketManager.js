@@ -1,6 +1,7 @@
 // RoundSocketManager.js
 import ArtApiService from "../Services/ArtApiService.js";
 import RoomRepository from "../Repository/RoomRepository.js";
+import UserRepository from "../Repository/UserRepository.js";
 
 class RoundSocketManager {
 
@@ -9,12 +10,14 @@ class RoundSocketManager {
     currentCorrectAnswerId = {};
     playersResponses = {};
     roomRepository = null;
+    userRepository = null;
     isRoundStarted = false;
 
     constructor(roomNamespace, roomCode) {
         this.roomNamespace = roomNamespace;
         this.roomCode = roomCode;
         this.roomRepository = new RoomRepository();
+        this.userRepository = new UserRepository();
     }
 
     async startRound(difficulty, artId) {
@@ -31,18 +34,20 @@ class RoundSocketManager {
         const chosenArtList = await ArtApiService.selectArtworkForRound(difficulty, artId);
         //TODO 
         // Choose the correct answer, shuffle the list and send it to the players
-        this.roomNamespace.to(this.roomCode).emit('roundStarted', {artInfo: chosenArtList, room: this.roomCode });
+        this.roomNamespace.to(this.roomCode).emit('roundStarted', { artInfo: chosenArtList, room: this.roomCode });
 
         // Choisir the first art as the correct answer
-        this.currentCorrectAnswer = chosenArtList[0];
+        this.currentCorrectAnswerId = chosenArtList[0].id;
         this.playersResponses = {};
-        console.log("Round started ", this.currentCorrectAnswer);
     }
 
-    async handlePlayerResponse(playerId, answer) {
+    async handlePlayerResponse(user, answerId) {
         // Enregistrer la réponse du joueur
-        this.playersResponses[playerId] = answer;
-        console.log("Player response ", this.playersResponses);
+        const username = user.username;
+        this.playersResponses[user.userId] = {
+            username,
+            answerId
+        };
         // Vérifier si toutes les réponses sont reçues
         if ((await this.areAllAnswersReceived())) {
             // Évaluer les réponses et envoyer les résultats
@@ -61,12 +66,12 @@ class RoundSocketManager {
     async getCurrentPlayerCount() {
         // Récupérer la liste des joueurs dans la room
         const room = await this.roomRepository.getRoomByCode(this.roomCode);
-
+        console.log("Current player count", room.currentPlayerNumber)
         // Récupérer le nombre de joueurs dans la room
         return room.currentPlayerNumber;
     }
 
-    handlePlayerLeave(user) {
+    async handlePlayerLeave(user) {
         if (!this.isRoundStarted) {
             return;
         }
@@ -77,25 +82,50 @@ class RoundSocketManager {
         }
 
         // Vérifiez si vous devez réévaluer l'état du jeu
-        if (this.areAllAnswersReceived()) {
+        if (await this.areAllAnswersReceived()) {
             this.evaluateAndSendResults();
         }
     }
 
 
-    evaluateAndSendResults() {
+    async evaluateAndSendResults() {
+        const roundResults = {};
         // Récupérer la liste des joueurs dans la room
-        console.log("Evaluating results");
         // Envoyer les résultats aux joueurs
-        
+        const userIds = Object.keys(this.playersResponses);
+        for (let i = 0; i < userIds.length; i++) {
+            const userId = userIds[i];
+            const username = this.playersResponses[userId].username;
+            if (this.playersResponses[userId].answerId === this.currentCorrectAnswerId) {
+                const score = await this.computeScore(i);
+                roundResults[userId] = { username: username, response: true, score: score };
+                this.userRepository.addScoreById(userId, score)
+            } else {
+                roundResults[userId] = { username: username, response: false, score: 0 };
+            }
+        }
 
-        this.handleRoundEnd();
+        this.handleRoundEnd(roundResults);
     }
 
-    handleRoundEnd() {
+    handleRoundEnd(roundResults) {
         // Envoyer les résultats aux joueurs
-        console.log("Round ended");
+        console.log("Round ended", roundResults);
         this.isRoundStarted = false;
+        this.roomNamespace.to(this.roomCode).emit('roundEnded', { roundResults: roundResults, room: this.roomCode });
+    }
+
+    endGame() {
+        //Clean itself and emit endGame event
+        this.isRoundStarted = false;
+        this.roomNamespace.to(this.roomCode).emit('gameEnded', { room: this.roomCode });
+    }
+
+    async computeScore(index) {
+        //TODO Compute score
+        const playerCount = await this.getCurrentPlayerCount();
+
+        return 100 * (playerCount  - index) / playerCount;
     }
 }
 
