@@ -69,10 +69,18 @@ class RoomSocketHandler {
             }
         });
 
-        socket.on("submitAnswer", async ({ roomCode, user, answer }) => {
-            Logger.info(`Utilisateur ${user.username} a répondu dans la room: ${roomCode}`);
+        socket.on("submitAnswer", async ({ roomCode, user, answerId }) => {
+            Logger.info(`Utilisateur ${user.username} a répondu dans la room: ${roomCode} avec la réponse: ${answerId}`);
             const roundSocketManager = this.roundManagers[roomCode];
-            roundSocketManager.handlePlayerResponse(user.userId, answer);
+            roundSocketManager.handlePlayerResponse(user, answerId);
+        });
+
+        socket.on("endGame", async ({ roomCode }) => {
+            Logger.info(`Utilisateur ${user.username} a terminé la partie dans la room: ${roomCode}`);
+            const roundSocketManager = this.roundManagers[roomCode];
+            if (roundSocketManager) {
+                roundSocketManager.endGame();
+            }
         });
     }
 
@@ -91,6 +99,8 @@ class RoomSocketHandler {
         socket.removeAllListeners("updateRoom");
         socket.removeAllListeners("startGame");
         socket.removeAllListeners("nextRound");
+        socket.removeAllListeners("submitAnswer");
+        socket.removeAllListeners("endGame");
     }
 
 }

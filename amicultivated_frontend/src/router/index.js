@@ -32,31 +32,30 @@ const router = createRouter({
       name: 'room',
       component: Room,
       beforeEnter: async (to, from, next) => {
-        const currentRoom = store.getters.currentRoomCode;
+        const currentRoom = store.getters.currentRoomInfos.code;
         // check room status
         const roomInfos = (await api.getRoomInfos(to.params.roomCode)).room;
-
         if (roomInfos.status === 'Open') {
 
-            if (currentRoom && currentRoom == to.params.roomCode) {
-              next();
-            } else {
-              // Else, user join the room if he's logged in and has a token
-              // Else, redirect to home
+          if (currentRoom && currentRoom == to.params.roomCode) {
+            next();
+          } else {
+            // Else, user join the room if he's logged in and has a token
+            // Else, redirect to home
 
-              await api.joinRoom(to.params.roomCode, store.getters.user.username);
-              next();
-            }
-          } else if(roomInfos.status === 'Started'){
+            await api.joinRoom(to.params.roomCode, store.getters.user.username);
+            next();
+          }
+        } else if (roomInfos.status === 'Started') {
 
-            //Check if user is alraedy in room
-            
-            const isPlayerInRoom = roomInfos.players.find(player =>  player === store.getters.user.username);
-            if(isPlayerInRoom){
-              next();
-            }else{
-              next({ name: 'home' });
-            }
+          //Check if user is alraedy in room
+
+          const isPlayerInRoom = roomInfos.players.find(player => player.username === store.getters.user.username);
+          if (isPlayerInRoom) {
+            next();
+          } else {
+            next({ name: 'home' });
+          }
         } else {
           next({ name: 'home' });
         }

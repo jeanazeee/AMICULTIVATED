@@ -2,8 +2,8 @@
     <div class="room-container">
         <div class="room-frame">
             <div class="player-list">
-                <div class="player-card" v-for="player in props.roomInfos.players" :key="player.id">
-                    {{ player }}
+                <div class="player-card" v-for="playerInfo in props.roomInfos.players" :key="playerInfo.id">
+                    {{ playerInfo.username }}
                 </div>
             </div>
             <div class="main">

@@ -1,7 +1,7 @@
 <template>
     <RoomStarting v-if="isGameOpen()" :roomInfos="roomInfo" :errorMessage="errorMessage" @startGame="startGame"
         @leaveRoom="leaveRoom" @updateRoom="sendUpdateRoom" />
-    <Game v-if="isGameStarted()" :roomInfos="roomInfo" :socketManager="socketManager" @restartGame="leaveRoom" />
+    <Game v-if="isGameStarted()" :roomInfos="roomInfo" :socketManager="socketManager" @leaveGame="leaveRoom" @endGame="endGame" />
 </template>
 
 <script setup>
@@ -57,6 +57,14 @@ const isGameOpen = () => {
 const startGame = async () => {
     try {
         await api.startGame(roomCode.value);
+    } catch (error) {   
+        handleError(error);
+    }
+}
+
+const endGame = async () => {
+    try {
+        await api.endGame(roomCode.value);
     } catch (error) {
         handleError(error);
     }
@@ -72,15 +80,6 @@ const leaveRoom = async () => {
     }
 }
 
-const restartRoom = async () => {
-    try {
-        await api.restartRoom(roomCode.value);
-        getNewRoomInfo();
-    } catch (error) {
-        handleError(error);
-    }
-}
-
 
 const initSocketHandlers = () => {
     socketManager.joinRoom(roomCode.value, store.getters.user);
@@ -88,6 +87,9 @@ const initSocketHandlers = () => {
     socketManager.onUserLeft(getNewRoomInfo);
     socketManager.onRoomUpdated(getNewRoomInfo);
     socketManager.onGameStarted(getNewRoomInfo);
+    socketManager.onGameEnded(() => {
+        currentRoundInfos.value.roundStatus = "Finished"
+    });
 }
 
 

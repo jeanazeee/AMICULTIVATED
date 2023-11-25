@@ -19,6 +19,10 @@ class RoomModel extends BaseModel{
                 type: DataTypes.INTEGER,
                 allowNull: false
             },
+            maxRounds: {
+                type: DataTypes.INTEGER,
+                allowNull: false
+            },
             status: {
                 type: DataTypes.STRING,
                 allowNull: false

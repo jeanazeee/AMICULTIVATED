@@ -26,7 +26,8 @@ class API {
                 username: username
             });
             if(response.status === 200){
-                this.store.dispatch('setCurrentRoomCode', { currentRoomCode: roomCode })
+                let roomData = response.data.room;
+                this.store.dispatch('saveCurrentRoomInfos', { currentRoomInfos: roomData })
             }
         } catch {
             this.leaveRoom(username);
@@ -55,18 +56,19 @@ class API {
         try {
             const body = {
                 maxPlayers: 5,
-                username: username
+                username: username,
+                maxRounds: 2,
             };
     
             const response = await this.api.post('room/create', body);
             if(response.status === 201){
-                let roomCode = response.data.room.code;
-                this.store.dispatch('setCurrentRoomCode', { currentRoomCode: roomCode })
+                let roomData = response.data.room;
+                this.store.dispatch('saveCurrentRoomInfos', { currentRoomInfos: roomData })
             }else{
                 throw response;
             }
 
-            return this.store.getters.currentRoomCode;
+            return this.store.getters.currentRoomInfos;
         } catch (error) {
             this.leaveRoom(username);
             console.error('Error creating room:', error);
@@ -111,7 +113,8 @@ class API {
             const response = await this.api.post(`room/${roomCode}/start`);
             if(response.status === 200){
                 this.roomSocketManager.startGame(roomCode);
-                return response.data;
+                this.store.dispatch('changeRoomStatus', { status: response.data.status });
+                return response.data.status;
             }else{
                 throw response;
             }
@@ -120,6 +123,22 @@ class API {
             throw error;
         }
     }
+
+    async endGame(roomCode){
+        try {
+            const response = await this.api.post(`room/${roomCode}/end`);
+            if(response.status === 200){
+                this.roomSocketManager.endGame(roomCode);
+                this.store.dispatch('changeRoomStatus', { status: response.data.status });
+                return response.data.status;
+            }else{
+                throw response;
+            }
+        } catch {
+            console.error('Error ending game:', error);
+            throw error;
+        }
+    }
 }
 
-export default API;
+export default API; 
