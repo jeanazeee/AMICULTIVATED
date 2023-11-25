@@ -50,14 +50,14 @@ const router = createRouter({
               // Else, user join the room if he's logged in and has a token
               // Else, redirect to home
 
-              await api.joinRoom(to.params.roomCode, store.getters.username);
+              await api.joinRoom(to.params.roomCode, store.getters.user.username);
               next();
             }
           } else if(roomInfos.status === 'Started'){
 
             //Check if user is alraedy in room
             
-            const isPlayerInRoom = roomInfos.players.find(player =>  player === store.getters.username);
+            const isPlayerInRoom = roomInfos.players.find(player =>  player === store.getters.user.username);
             if(isPlayerInRoom){
               next();
             }else{

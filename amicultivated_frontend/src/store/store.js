@@ -14,19 +14,30 @@ export const store = new createStore({
             imageUrl: '',
             answers: [],
         },
+        user: JSON.parse(localStorage.getItem('user')) || {
+            userId: '',
+            username: '',
+            token: '',
+        },
     },
     mutations: {
-        login(state, {username, token, currentRoomCode}) {
+        login(state, {username, token, userId, currentRoomCode}) {
             state.loggedIn = true;
-            state.username = username;
-            state.token = token;
             state.currentRoomCode = currentRoomCode;
+            state.user = {
+                userId: userId,
+                username: username,
+                token: token,
+            };
         },
         logout(state) {
             state.loggedIn = false;
-            state.username = '';
-            state.token = '';
             state.currentRoomCode = '';
+            state.user = {
+                userId: '',
+                username: '',
+                token: '',
+            };
         },
         setCurrentRoomCode(state, currentRoomCode) {
             state.currentRoomCode = currentRoomCode;
@@ -48,8 +59,12 @@ export const store = new createStore({
         login: ({ commit }, { username, password }) => {
             return authApi.login(username, password)
                 .then((response) => {
-                    localStorage.setItem('username', username);
-                    localStorage.setItem('token', response.data.token);
+                    const user = {
+                        userId: response.data.userId,
+                        username: username,
+                        token: response.data.token,
+                    }
+                    localStorage.setItem('user', JSON.stringify(user));
                     localStorage.setItem('currentRoomCode', response.data.currentRoomCode);
                     commit('login', { username, token: response.data.token, currentRoomCode: response.data.currentRoomCode });
                 })
@@ -58,17 +73,21 @@ export const store = new createStore({
                 });
         },
         logout: ({ commit }) => {
-            localStorage.removeItem('username');
-            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('currentRoomCode');
             commit('logout');
         },
         signup: ({ commit }, { username, password }) => {
             return authApi.signup(username, password)
                 .then((response) => {
-                    commit('login', { username, token: response.data.token, currentRoomCode: response.data.currentRoomCode });
-                    localStorage.setItem('username', username);
-                    localStorage.setItem('token', response.data.token);
+                    const user = {
+                        userId: response.data.userId,
+                        username: username,
+                        token: response.data.token,
+                    }
+                    localStorage.setItem('user', JSON.stringify(user));
                     localStorage.setItem('currentRoomCode', response.data.currentRoomCode);
+                    commit('login', { username, token: response.data.token, userId:response.data.userId , currentRoomCode: response.data.currentRoomCode });
                 })
                 .catch((error) => {
                     console.error(error);
@@ -86,15 +105,13 @@ export const store = new createStore({
             localStorage.removeItem('currentRoundInfos');
         },
         saveCurrentRoundInfos: ({ commit }, { currentRoundInfos }) => {
-
             commit('saveCurrentRoundInfos', currentRoundInfos);
             localStorage.setItem('currentRoundInfos', JSON.stringify(currentRoundInfos));
         },
     },
     getters: {
-        username: state => state.username,
+        user: state => state.user,
         loggedIn: state => state.loggedIn,
-        token: state => state.token,
         currentRoomCode: state => state.currentRoomCode,
         currentRoundInfos: state => state.currentRoundInfos,
     },

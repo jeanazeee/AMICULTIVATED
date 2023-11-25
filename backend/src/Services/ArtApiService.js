@@ -59,6 +59,41 @@ class ArtApiService {
         return chosenArt;
 
     }
+
+    static async selectArtworkForRound(difficulty, artId) {
+        let pageStart = 1;
+        let pageEnd = 3;
+        if(difficulty == 1){
+            pageStart = 4;
+            pageEnd = 6;
+        }else if(difficulty >= 2){
+            pageStart = 7;
+            pageEnd = 9;
+        }
+
+        const artList = await ArtApiService.getArt(pageStart, pageEnd);
+
+        // chose 4 random arts from the list
+        const chosenArtList = [];
+        while (chosenArtList.length < 4) {
+            const index = Math.floor(Math.random() * artList.data.length);
+            const chosenArt = artList.data[index];
+    
+            // Check if the chosen art is unique in terms of title, artistName, and completionYear
+            const isUnique = !chosenArtList.some(art => 
+                art.title === chosenArt.title && 
+                art.artistName === chosenArt.artistName &&
+                art.completionYear === chosenArt.completionYear
+            );
+    
+            if (isUnique) {
+                console.log("Chosen art: ", chosenArt);
+                chosenArtList.push(chosenArt);
+            }
+        }
+
+        return chosenArtList;
+    }
 }
 
 export default ArtApiService;
