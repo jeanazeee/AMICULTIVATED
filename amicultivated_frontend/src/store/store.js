@@ -6,24 +6,33 @@ const authApi = new AuthAPI();
 
 export const store = new createStore({
     state: {
-        loggedIn: (localStorage.getItem('username') !== null && localStorage.getItem('token') !== null),
-        username: localStorage.getItem('username') || '',
-        token: localStorage.getItem('token') || '',
-        currentRoomCode: localStorage.getItem('currentRoomCode') || '',
+        loggedIn: (localStorage.getItem('usename') !== null && localStorage.getItem('token') !== null),
         currentRoundInfos: JSON.parse(localStorage.getItem('currentRoundInfos')) || {
             imageUrl: '',
             answers: [],
+            roundStatus: '',
+            roundResults: {},
+            roundNumber: 0,
         },
         user: JSON.parse(localStorage.getItem('user')) || {
             userId: '',
             username: '',
             token: '',
         },
+        currentRoomInfos: JSON.parse(localStorage.getItem('currentRoomInfos')) || {
+            code: '',
+            maxPlayers: 0,
+            players: {},
+            status: "",
+            currentRoundNumber: 0,
+            currentRoundStatus: '',
+            currentRoundResults: {},
+        }
     },
     mutations: {
         login(state, {username, token, userId, currentRoomCode}) {
             state.loggedIn = true;
-            state.currentRoomCode = currentRoomCode;
+            state.currentRoomInfos.code = currentRoomCode;
             state.user = {
                 userId: userId,
                 username: username,
@@ -32,18 +41,12 @@ export const store = new createStore({
         },
         logout(state) {
             state.loggedIn = false;
-            state.currentRoomCode = '';
+            state.currentRoomInfos.code = '';
             state.user = {
                 userId: '',
                 username: '',
                 token: '',
             };
-        },
-        setCurrentRoomCode(state, currentRoomCode) {
-            state.currentRoomCode = currentRoomCode;
-        },
-        deleteCurrentRoomCode(state) {
-            state.currentRoomCode = '';
         },
         saveCurrentRoundInfos(state, currentRoundInfos) {
             state.currentRoundInfos = currentRoundInfos;
@@ -52,7 +55,27 @@ export const store = new createStore({
             state.currentRoundInfos = {
                 imageUrl: '',
                 answers: [],
+                roundStatus: '',
+                roundResults: {},
+                roundNumber: 0,
             };
+        },
+        saveCurrentRoomInfos(state, currentRoomInfos) {
+            state.currentRoomInfos = currentRoomInfos;
+        },
+        deleteCurrentRoomInfos(state) {
+            state.currentRoomInfos = {
+                code: '',
+                maxPlayers: 0,
+                players: {},
+                status: "",
+                currentRoundNumber: 0,
+                currentRoundStatus: '',
+                currentRoundResults: {},
+            };
+        },
+        changeRoomStatus(state, status) {
+            state.currentRoomInfos.status = status;
         }
     },
     actions: {
@@ -65,8 +88,9 @@ export const store = new createStore({
                         token: response.data.token,
                     }
                     localStorage.setItem('user', JSON.stringify(user));
-                    localStorage.setItem('currentRoomCode', response.data.currentRoomCode);
-                    commit('login', { username, token: response.data.token, currentRoomCode: response.data.currentRoomCode });
+                    roomData = {code: response.data.currentRoomCode}
+                    localStorage.setItem('currentRoomInfos', JSON.stringify(roomData));
+                    commit('login', { username: user.username, token: user.token, userId:user.userId, currentRoomCode: response.data.currentRoomCode });
                 })
                 .catch((error) => {
                     console.error(error);
@@ -74,7 +98,7 @@ export const store = new createStore({
         },
         logout: ({ commit }) => {
             localStorage.removeItem('user');
-            localStorage.removeItem('currentRoomCode');
+            localStorage.removeItem('currentRoomInfos');
             commit('logout');
         },
         signup: ({ commit }, { username, password }) => {
@@ -86,34 +110,43 @@ export const store = new createStore({
                         token: response.data.token,
                     }
                     localStorage.setItem('user', JSON.stringify(user));
-                    localStorage.setItem('currentRoomCode', response.data.currentRoomCode);
+                    roomData = {code: response.data.currentRoomCode}
+                    localStorage.setItem('currentRoomInfos', JSON.stringify(roomData));
                     commit('login', { username, token: response.data.token, userId:response.data.userId , currentRoomCode: response.data.currentRoomCode });
                 })
                 .catch((error) => {
                     console.error(error);
                 });
         },
-        setCurrentRoomCode: ({ commit }, { currentRoomCode }) => {
-            localStorage.setItem('currentRoomCode', currentRoomCode);
-            commit('setCurrentRoomCode', currentRoomCode);
+        
+        saveCurrentRoundInfos: ({ commit }, { currentRoundInfos }) => {
+            commit('saveCurrentRoundInfos', currentRoundInfos);
+            localStorage.setItem('currentRoundInfos', JSON.stringify(currentRoundInfos));
+        },
+        saveCurrentRoomInfos: ({ commit }, { currentRoomInfos }) => {
+            commit('saveCurrentRoomInfos', currentRoomInfos);
+            localStorage.setItem('currentRoomInfos', JSON.stringify(currentRoomInfos));
         },
         deleteRoomInfos: ({ commit }) => {
-            commit('deleteCurrentRoomCode');
-            localStorage.removeItem('currentRoomCode');
+            commit('deleteCurrentRoomInfos');
+            localStorage.removeItem('currentRoomInfos');
 
             commit('deleteCurrentRoundInfos');
             localStorage.removeItem('currentRoundInfos');
         },
-        saveCurrentRoundInfos: ({ commit }, { currentRoundInfos }) => {
-            commit('saveCurrentRoundInfos', currentRoundInfos);
-            localStorage.setItem('currentRoundInfos', JSON.stringify(currentRoundInfos));
+        changeRoomStatus: ({ commit }, { status }) => {
+            const currentRoomInfos = JSON.parse(localStorage.getItem('currentRoomInfos'));
+            currentRoomInfos.status = status;
+            commit('saveCurrentRoomInfos', currentRoomInfos);
+            localStorage.setItem('currentRoomInfos', JSON.stringify(currentRoomInfos));
         },
     },
     getters: {
         user: state => state.user,
         loggedIn: state => state.loggedIn,
-        currentRoomCode: state => state.currentRoomCode,
         currentRoundInfos: state => state.currentRoundInfos,
+        currentRoomInfos: state => state.currentRoomInfos,
     },
+
 });
 

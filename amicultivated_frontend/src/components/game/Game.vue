@@ -4,14 +4,9 @@
             <h2>Trouvez la réponse correct pour l'attribut Titre de l'oeuvre</h2>
         </div>
         <div class="body-frame">
-            <div class="left">
-                <div class="players">
-                    <div class="player-card" v-for="player in props.roomInfos.players" :key="player.id">
-                        {{ player }}
-                    </div>
-                </div>
-                <div class="leave-room">
-                    <button class="full-button" @click="leaveRoom()" >Quitter la Room</button>
+            <div class="players">
+                <div class="player-card" v-for="player in props.roomInfos.players" :key="player.id">
+                    {{ player }}
                 </div>
             </div>
             <div class="art-frame">
@@ -19,19 +14,43 @@
                     <img :src="currentRoundInfos.image">
                 </div>
                 <div class="response">
-                    <button>1988</button>
-                    <button>1988</button>
-                    <button>1988</button>
-                    <button>1988</button>
-                </div>
-                <div class="answers">
+                    <div class="rowonebutton">
+                        <button>1988</button>
+                        <button>1988</button>
+                    </div>
+                    <div class="rowtwobutton">
+                        <button>1988</button>
+                        <button>1988</button>
+                    </div>
+                    <div class="answers">
                         <button class="answer" v-for="answer in currentRoundInfos.answers" @click="submitAnswer(answer)">
                             {{ answer }}
                         </button>
                     </div>
+                </div>
             </div>
         </div>
-        
+        <div class="roundOn-container" v-if="isRoundGoing()">
+            <img :src="currentRoundInfos.image" alt="">
+            <div class="answers">
+                <button class="answer" v-for="artAnswer in currentRoundInfos.artAnswers"
+                    @click="submitAnswer(artAnswer.id)">
+                    {{ artAnswer.title }}
+                    {{ artAnswer.artistName }}
+                </button>
+            </div>
+        </div>
+        <div class="roundOff-container" v-if="isRoundFinished()">
+            <img :src="currentRoundInfos.image" alt="">
+            <div v-for="result in currentRoundInfos.roundResults">
+                {{ result.username }} : {{ result.score }}
+            </div>
+            <button @click="startNextRound()" v-if="hasNextRound()">Next Round</button>
+            <button @click="endGame()" v-if="isGameFinished()">End Game</button>
+        </div>
+        <div class="restart-room">
+            <button class="full-button" @click="leaveGame()">Quitter la Room</button>
+        </div>
     </div>
 
     <div class="leave-room">
@@ -45,17 +64,23 @@ import { useRouter } from 'vue-router';
 import { onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 
-const store = useStore();
 const router = useRouter();
-const emit = defineEmits(['leaveRoom']);
 const loading = ref(false);
 const props = defineProps({
     roomInfos: Object,
     socketManager: Object
 });
+const store = useStore();
+const currentRoundInfos = ref({
+    image: "",
+    artAnswers: [],
+    roundStatus: "",
+    roundResults: {},
+    roundNumber: 0
+});
 
-const currentRoundInfos = ref({});
 
+const emit = defineEmits(['leaveGame', 'endGame']);
 
 
 onMounted(() => {
@@ -66,24 +91,35 @@ onMounted(() => {
 const initSocketHandlers = () => {
     loading.value = true;
     props.socketManager.onRoundStarted((data) => {
-        console.log("Round started");
         formatRoundInfos(data.artInfo);
+        currentRoundInfos.value.roundStatus = "Going"
+        currentRoundInfos.value.roundNumber++;
         store.dispatch('saveCurrentRoundInfos', { currentRoundInfos: currentRoundInfos.value })
         loading.value = false;
-    })
+    });
+
+    props.socketManager.onRoundEnded((data) => {
+        currentRoundInfos.value.roundStatus = "Finished"
+        currentRoundInfos.value.roundResults = data.roundResults;
+        //add from currentRoundInfos and roundResults
+        store.dispatch('saveCurrentRoundInfos', { currentRoundInfos: currentRoundInfos.value })
+        loading.value = false;
+    });
+
+
 }
 
-const restartGame = () => {
-    emit('restartGame');
+const leaveGame = () => {
+    emit('leaveGame');
 }
 
 const formatRoundInfos = (artsInfo) => {
-    currentRoundInfos.value.answers = [];
+    currentRoundInfos.value.artAnswers = [];
     currentRoundInfos.value.image = artsInfo[0].image;
     for (let i = 0; i < artsInfo.length; i++) {
-        currentRoundInfos.value.answers.push(artsInfo[i].title);
+        currentRoundInfos.value.artAnswers.push(artsInfo[i]);
     }
-    shuffleArray(currentRoundInfos.value.answers);
+    shuffleArray(currentRoundInfos.value.artAnswers);
 }
 
 const shuffleArray = (array) => {
@@ -95,14 +131,37 @@ const shuffleArray = (array) => {
     }
 }
 
-const submitAnswer = (answer) => {
-    console.log("Answering round");
-    props.socketManager.submitAnswer(store.getters.currentRoomCode,store.getters.user,answer);
+const submitAnswer = (artAnswerId) => {
+    props.socketManager.submitAnswer(store.getters.currentRoomInfos.code, store.getters.user, artAnswerId);
 }
+
+const startNextRound = () => {
+    props.socketManager.startNextRound(store.getters.currentRoomInfos.code);
+}
+
+const endGame = () => {
+    emit('endGame');
+}
+
+const isRoundGoing = () => {
+    return currentRoundInfos.value.roundStatus === "Going";
+}
+
+const isRoundFinished = () => {
+    return currentRoundInfos.value.roundStatus === "Finished";
+}
+
+const hasNextRound = () => {
+    return currentRoundInfos.value.roundNumber < props.roomInfos.maxRounds;
+}
+
+const isGameFinished = () => {
+    return currentRoundInfos.value.roundNumber === props.roomInfos.maxRounds;
+}
+
 </script>
 
 <style scoped>
-
 .left {
     float: left;
 }
@@ -124,18 +183,18 @@ const submitAnswer = (answer) => {
 }
 
 .art-frame {
-    width:40%;
+    width: 40%;
     margin: auto;
-    
+
 }
 
 .next {
     margin: auto;
     margin-top: 2em;
     width: 10em;
-    padding:1em;
+    padding: 1em;
     background-color: purple;
-    border-radius:5px;
+    border-radius: 5px;
     margin-bottom: 5em;
     text-align: center;
 }
@@ -143,19 +202,20 @@ const submitAnswer = (answer) => {
 .next:hover {
     margin: auto;
     text-align: center;
-    padding:1em;
+    padding: 1em;
     margin-top: 2em;
     width: 10em;
     background-color: purple;
     color: white;
-    border-radius:5px;
+    border-radius: 5px;
 }
+
 .leave-room {
     margin: auto;
     margin-top: 2em;
     width: 7em;
     background-color: purple;
-    border-radius:5px;
+    border-radius: 5px;
     margin-bottom: 5em;
 }
 
@@ -175,31 +235,30 @@ const submitAnswer = (answer) => {
 }
 
 .response button {
-    margin:0.4em;
-    width:45%;
+    margin: 0.4em;
+    width: 45%;
     height: auto;
     border-radius: 1em;
     color: grey;
     font-size: large;
-    font-weight:700 ;
+    font-weight: 700;
     background-color: white;
     transition: 1s;
 }
 
 .response button:hover {
-    margin:0.2em;
-    width:45%;
+    margin: 0.2em;
+    width: 45%;
     border-radius: 1em;
     color: grey;
     font-size: large;
-    font-weight:700 ;
+    font-weight: 700;
     background-color: lightsalmon;
     transition: 1s;
 }
 
-.players{
-    margin-left:3em ;
+.players {
+    margin-left: 3em;
     background-color: white;
 }
-
 </style>
