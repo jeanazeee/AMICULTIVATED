@@ -19,6 +19,7 @@ class RoomController extends BaseController{
             new Route(RoomController.prefix + "/:roomCode", "put", this.updateRoom.bind(this)),
             new Route(RoomController.prefix + "/:roomCode/start", "post", this.startGame.bind(this)),
             new Route(RoomController.prefix + "/:roomCode/end", "post", this.endGame.bind(this)),
+            new Route(RoomController.prefix + "/:roomCode/scores", "get", this.getScoresByRoom.bind(this)),
         ];
     }
     
@@ -219,6 +220,29 @@ class RoomController extends BaseController{
         this.userRepository.resetScoreByRoomId(room.id);
 
         res.status(200).json({ message: "Room updated successfully", status: "Finished"});
+    }
+
+    async getScoresByRoom(req, res){
+        const {roomCode} = req.params;
+
+        if (!roomCode) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+
+        let room = await this.roomRepository.getRoomByCode(roomCode);
+
+        if(!room){
+            return res.status(400).json({ message: "Room not found" });
+        }
+
+        let users = await this.userRepository.getUsersByRoomId(room.id);
+
+        const usersScores = {};
+        users.forEach(user => {
+            usersScores[user.username] = user.score;
+        });
+
+        res.status(200).json({ message: "Scores found", scores: usersScores});
     }
 
 
