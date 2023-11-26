@@ -2,6 +2,7 @@
 import ArtApiService from "../Services/ArtApiService.js";
 import RoomRepository from "../Repository/RoomRepository.js";
 import UserRepository from "../Repository/UserRepository.js";
+import Logger from "../Logger/Logger.js";
 
 class RoundSocketManager {
 
@@ -21,6 +22,11 @@ class RoundSocketManager {
     }
 
     async startRound(difficulty, artId) {
+        if (this.isRoundStarted) {
+            Logger.warning("Round already started");
+            return;
+        }
+
         this.isRoundStarted = true;
         difficulty = parseInt(difficulty);
 

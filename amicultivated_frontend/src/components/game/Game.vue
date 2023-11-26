@@ -80,7 +80,7 @@ const currentRoundInfos = ref({
 });
 
 
-const emit = defineEmits(['leaveGame', 'endGame']);
+const emit = defineEmits(['leaveGame', 'endGame', 'roundEnd']);
 
 
 onMounted(() => {
@@ -103,6 +103,8 @@ const initSocketHandlers = () => {
         currentRoundInfos.value.roundResults = data.roundResults;
         //add from currentRoundInfos and roundResults
         store.dispatch('saveCurrentRoundInfos', { currentRoundInfos: currentRoundInfos.value })
+        //scores will be updated by parent
+        emit('roundEnd');
         loading.value = false;
     });
 
@@ -129,9 +131,16 @@ const shuffleArray = (array) => {
         array[i] = array[j];
         array[j] = temp;
     }
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
 }
 
 const submitAnswer = (artAnswerId) => {
+    props.socketManager.submitAnswer(store.getters.currentRoomInfos.code, store.getters.user, artAnswerId);
     props.socketManager.submitAnswer(store.getters.currentRoomInfos.code, store.getters.user, artAnswerId);
 }
 
@@ -158,6 +167,8 @@ const hasNextRound = () => {
 const isGameFinished = () => {
     return currentRoundInfos.value.roundNumber === props.roomInfos.maxRounds;
 }
+
+
 
 </script>
 
