@@ -80,6 +80,7 @@ class API {
         try {
             const response = await this.api.get(`room/${roomCode}`);
             if(response.status === 200){
+                this.store.dispatch('saveCurrentRoomInfos', { currentRoomInfos: response.data.room })
                 return response.data;
             }else{
                 throw response;
@@ -136,6 +137,27 @@ class API {
             }
         } catch {
             console.error('Error ending game:', error);
+            throw error;
+        }
+    }
+
+    async getScoresByRoom(roomCode){
+        try {
+            const response = await this.api.get(`room/${roomCode}/scores`);
+            if(response.status === 200){
+                const scores = response.data.scores;
+                const currentRoomInfos = this.store.getters.currentRoomInfos;
+                //for each player in players update his score
+                for (let i = 0; i < currentRoomInfos.players.length; i++) {
+                    currentRoomInfos.players[i].score = scores[currentRoomInfos.players[i].username];
+                }
+                this.store.dispatch('saveCurrentRoomInfos', {currentRoomInfos});
+                return response.data.scores;
+            }else{
+                throw response;
+            }
+        } catch {
+            console.error('Error getting scores:', error);
             throw error;
         }
     }

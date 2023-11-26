@@ -20,6 +20,7 @@ export const store = new createStore({
             token: '',
         },
         currentRoomInfos: JSON.parse(localStorage.getItem('currentRoomInfos')) || {
+            id: '',
             code: '',
             maxPlayers: 0,
             players: {},
@@ -65,6 +66,7 @@ export const store = new createStore({
         },
         deleteCurrentRoomInfos(state) {
             state.currentRoomInfos = {
+                id: '',
                 code: '',
                 maxPlayers: 0,
                 players: {},
