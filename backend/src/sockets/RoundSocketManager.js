@@ -13,6 +13,7 @@ class RoundSocketManager {
     roomRepository = null;
     userRepository = null;
     isRoundStarted = false;
+    roundAnswerIndex = 0;
 
     constructor(roomNamespace, roomCode) {
         this.roomNamespace = roomNamespace;
@@ -52,7 +53,8 @@ class RoundSocketManager {
         const username = user.username;
         this.playersResponses[user.userId] = {
             username,
-            answerId
+            answerId,
+            index: this.roundAnswerIndex++
         };
         // Vérifier si toutes les réponses sont reçues
         if ((await this.areAllAnswersReceived())) {
@@ -72,7 +74,6 @@ class RoundSocketManager {
     async getCurrentPlayerCount() {
         // Récupérer la liste des joueurs dans la room
         const room = await this.roomRepository.getRoomByCode(this.roomCode);
-        console.log("Current player count", room.currentPlayerNumber)
         // Récupérer le nombre de joueurs dans la room
         return room.currentPlayerNumber;
     }
@@ -103,7 +104,7 @@ class RoundSocketManager {
             const userId = userIds[i];
             const username = this.playersResponses[userId].username;
             if (this.playersResponses[userId].answerId === this.currentCorrectAnswerId) {
-                const score = await this.computeScore(i);
+                const score = await this.computeScore(this.playersResponses[userId].index);
                 roundResults[userId] = { username: username, response: true, score: score };
                 this.userRepository.addScoreById(userId, score)
             } else {
@@ -116,7 +117,7 @@ class RoundSocketManager {
 
     handleRoundEnd(roundResults) {
         // Envoyer les résultats aux joueurs
-        console.log("Round ended", roundResults);
+        this.roundAnswerIndex = 0;
         this.isRoundStarted = false;
         this.roomNamespace.to(this.roomCode).emit('roundEnded', { roundResults: roundResults, room: this.roomCode });
     }

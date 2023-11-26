@@ -87,7 +87,6 @@ class ArtApiService {
             );
     
             if (isUnique) {
-                console.log("Chosen art: ", chosenArt);
                 chosenArtList.push(chosenArt);
             }
         }
