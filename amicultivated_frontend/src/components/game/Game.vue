@@ -90,12 +90,11 @@ const leaveRoom = async () => {
     color: white;
     border-radius:5px;
 }
-
 .response {
     margin: auto;
     width: 100%;
 }
 .rowonebutton {
-    
+
 }
 </style>
