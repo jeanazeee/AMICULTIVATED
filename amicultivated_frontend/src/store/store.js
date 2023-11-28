@@ -14,6 +14,7 @@ export const store = new createStore({
             roundResults: {},
             roundNumber: 0,
             questionType: '',
+            hasAnswered: false,
         },
         user: JSON.parse(localStorage.getItem('user')) || {
             userId: '',
@@ -61,6 +62,7 @@ export const store = new createStore({
                 roundResults: {},
                 roundNumber: 0,
                 questionType: '',
+                hasAnswered: false,
             };
         },
         saveCurrentRoomInfos(state, currentRoomInfos) {
@@ -116,7 +118,7 @@ export const store = new createStore({
             currentRoomInfos.status = status;
             commit('saveCurrentRoomInfos', currentRoomInfos);
             localStorage.setItem('currentRoomInfos', JSON.stringify(currentRoomInfos));
-        },
+        }
     },
     getters: {
         user: state => state.user,

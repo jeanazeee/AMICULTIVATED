@@ -15,8 +15,8 @@
                     <img :src="currentRoundInfos.image" oncontextmenu="return true;">
                 </div>
                 <div class="response" v-if="isRoundGoing()">
-                    <button class="answer" v-for="artAnswer in currentRoundInfos.artAnswers"
-                        @click="submitAnswer(artAnswer.id)">
+                    <button class="answer-button" v-for="artAnswer in currentRoundInfos.artAnswers"
+                        @click="submitAnswer(artAnswer.id)" :disabled="currentRoundInfos.hasAnswered">
                         <span v-if="currentRoundInfos.questionType == 'title'">{{ artAnswer.title }}</span>
                         <span v-if="currentRoundInfos.questionType == 'artist'">{{ artAnswer.artistName }}</span>
                         <span v-if="currentRoundInfos.questionType == 'year'">{{ artAnswer.completitionYear }}</span>
@@ -57,7 +57,6 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { onMounted, ref } from 'vue';
 
-const router = useRouter();
 const loading = ref(false);
 const props = defineProps({
     roomInfos: Object,
@@ -70,7 +69,8 @@ const currentRoundInfos = ref({
     roundStatus: "",
     roundResults: {},
     roundNumber: 0,
-    questionType: ""
+    questionType: "",
+    hasAnswered: false
 });
 const questionTypeMapAttributes = {
     "title": "Titre de l'oeuvre",
@@ -139,6 +139,10 @@ const shuffleArray = (array) => {
 }
 
 const submitAnswer = (artAnswerId) => {
+    console.log("submitAnswer");
+    currentRoundInfos.value = store.getters.currentRoundInfos;
+    currentRoundInfos.value.hasAnswered = true;
+    store.dispatch('saveCurrentRoundInfos', { currentRoundInfos: currentRoundInfos.value })
     props.socketManager.submitAnswer(store.getters.currentRoomInfos.code, store.getters.user, artAnswerId);
 }
 
@@ -255,7 +259,9 @@ const isGameFinished = () => {
     transition: 1s;
 }
 
-.response button:hover {
+
+
+.answer-button:hover {
     margin: 0.2em;
     width: 45%;
     border-radius: 1em;
@@ -266,8 +272,17 @@ const isGameFinished = () => {
     transition: 1s;
 }
 
+.answer-button:disabled, .answer-button:disabled:hover{
+    margin: 0.4em;
+    background-color: #cccccc; /* Couleur de fond grise */
+    color: #666666; /* Couleur de texte plus foncée */
+    opacity: 0.5; /* Rend le bouton partiellement transparent */
+    cursor: not-allowed; /* Change le curseur pour indiquer qu'il n'est pas cliquable */
+}
+
 .players {
     margin-left: 3em;
     background-color: white;
 }
+
 </style>
