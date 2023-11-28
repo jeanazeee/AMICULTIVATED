@@ -4,7 +4,7 @@
             <h2>Trouvez la réponse correct pour l'attribut Titre de l'oeuvre</h2>
         </div>
         <div class="body-frame">
-            <div class="players">
+            <div class="players" style="display: none;">
                 <div class="player-card" v-for="player in props.roomInfos.players" :key="player.id">
                     {{ player }}
                 </div>
@@ -13,39 +13,21 @@
                 <div class="img">
                     <img :src="currentRoundInfos.image">
                 </div>
-                <div class="response">
-                    <div class="rowonebutton">
-                        <button>1988</button>
-                        <button>1988</button>
+                <div class="response" v-if="isRoundGoing()">
+                    <button class="answer" v-for="artAnswer in currentRoundInfos.artAnswers"
+                        @click="submitAnswer(artAnswer.id)">
+                        {{ artAnswer.title }}
+                    </button>
+                </div>
+
+                <div class="roundOff-container" v-if="isRoundFinished()">
+                    <div v-for="result in currentRoundInfos.roundResults">
+                        {{ result.username }} : {{ result.score }}
                     </div>
-                    <div class="rowtwobutton">
-                        <button>1988</button>
-                        <button>1988</button>
-                    </div>
-                    <div class="answers">
-                        <button class="answer" v-for="answer in currentRoundInfos.answers" @click="submitAnswer(answer)">
-                            {{ answer }}
-                        </button>
-                    </div>
+                    <button class="leave-room" @click="startNextRound()" v-if="hasNextRound()">Next Round</button>
+                    <button class="leave-room" @click="endGame()" v-if="isGameFinished()">End Game</button>
                 </div>
             </div>
-        </div>
-        <div class="roundOn-container" v-if="isRoundGoing()">
-            <div class="answers">
-                <button class="answer" v-for="artAnswer in currentRoundInfos.artAnswers"
-                    @click="submitAnswer(artAnswer.id)">
-                    {{ artAnswer.title }}
-                    {{ artAnswer.artistName }}
-                </button>
-            </div>
-        </div>
-        <div class="roundOff-container" v-if="isRoundFinished()">
-            <img :src="currentRoundInfos.image" alt="">
-            <div v-for="result in currentRoundInfos.roundResults">
-                {{ result.username }} : {{ result.score }}
-            </div>
-            <button @click="startNextRound()" v-if="hasNextRound()">Next Round</button>
-            <button @click="endGame()" v-if="isGameFinished()">End Game</button>
         </div>
     </div>
 

@@ -132,7 +132,9 @@ class RoundSocketManager {
         //TODO Compute score
         const playerCount = await this.getCurrentPlayerCount();
 
-        return 100 * (playerCount  - index) / playerCount;
+        const score =  100 * (playerCount  - (index-1)) / playerCount;
+        console.log("score", score, "index", index, "playerCount", playerCount);
+        return score;
     }
 }
 
