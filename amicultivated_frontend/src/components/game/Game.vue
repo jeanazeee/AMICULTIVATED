@@ -1,7 +1,7 @@
 <template>
     <div class="main-frame">
         <div class="title">
-            <h2>Trouvez la réponse correct pour l'attribut Titre de l'oeuvre</h2>
+            <h2>Trouvez la réponse correct pour l'attribut : {{ questionTypeMapAttributes[currentRoundInfos.questionType] }}</h2>
         </div>
         <div class="body-frame">
             <div class="players" style="display: none;">
@@ -16,7 +16,9 @@
                 <div class="response" v-if="isRoundGoing()">
                     <button class="answer" v-for="artAnswer in currentRoundInfos.artAnswers"
                         @click="submitAnswer(artAnswer.id)">
-                        {{ artAnswer.title }}
+                        <span v-if="currentRoundInfos.questionType == 'title'">{{ artAnswer.title }}</span>
+                        <span v-if="currentRoundInfos.questionType == 'artist'">{{ artAnswer.artistName }}</span>
+                        <span v-if="currentRoundInfos.questionType == 'year'">{{ artAnswer.completitionYear }}</span>
                     </button>
                 </div>
 
@@ -53,9 +55,14 @@ const currentRoundInfos = ref({
     artAnswers: [],
     roundStatus: "",
     roundResults: {},
-    roundNumber: 0
+    roundNumber: 0,
+    questionType: ""
 });
-
+const questionTypeMapAttributes = {
+    "title": "Titre de l'oeuvre",
+    "artist": "Nom de l'artiste",
+    "year": "Date de création"
+}
 
 const emit = defineEmits(['leaveGame', 'endGame', 'roundEnd']);
 
@@ -71,6 +78,7 @@ const initSocketHandlers = () => {
         formatRoundInfos(data.artInfo);
         currentRoundInfos.value.roundStatus = "Going"
         currentRoundInfos.value.roundNumber++;
+        currentRoundInfos.value.questionType = data.questionType;
         store.dispatch('saveCurrentRoundInfos', { currentRoundInfos: currentRoundInfos.value })
         loading.value = false;
     });

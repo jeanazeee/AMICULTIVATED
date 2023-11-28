@@ -13,6 +13,7 @@ export const store = new createStore({
             roundStatus: '',
             roundResults: {},
             roundNumber: 0,
+            questionType: '',
         },
         user: JSON.parse(localStorage.getItem('user')) || {
             userId: '',
@@ -59,6 +60,7 @@ export const store = new createStore({
                 roundStatus: '',
                 roundResults: {},
                 roundNumber: 0,
+                questionType: '',
             };
         },
         saveCurrentRoomInfos(state, currentRoomInfos) {

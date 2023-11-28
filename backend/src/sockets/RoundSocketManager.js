@@ -41,7 +41,8 @@ class RoundSocketManager {
         const chosenArtList = await ArtApiService.selectArtworkForRound(difficulty, artId);
         //TODO 
         // Choose the correct answer, shuffle the list and send it to the players
-        this.roomNamespace.to(this.roomCode).emit('roundStarted', { artInfo: chosenArtList, room: this.roomCode });
+        const questionType = this.chooseQuestionType();
+        this.roomNamespace.to(this.roomCode).emit('roundStarted', { artInfo: chosenArtList, room: this.roomCode, questionType: questionType });
 
         // Choisir the first art as the correct answer
         this.currentCorrectAnswerId = chosenArtList[0].id;
@@ -135,6 +136,23 @@ class RoundSocketManager {
         const score =  100 * (playerCount  - (index-1)) / playerCount;
         console.log("score", score, "index", index, "playerCount", playerCount);
         return score;
+    }
+
+    // 0 = artist, 1 = title, 2 = year
+    chooseQuestionType() {
+        //random number between 0 and 2
+        const random = Math.floor(Math.random() * 3);
+
+        switch (random) {
+            case 0:
+                return "artist";
+            case 1:
+                return "title";
+            case 2:
+                return "year";
+            default:
+                return "artist";
+        }
     }
 }
 
