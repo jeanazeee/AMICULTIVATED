@@ -29,7 +29,7 @@ class API {
                 let roomData = response.data.room;
                 this.store.dispatch('saveCurrentRoomInfos', { currentRoomInfos: roomData })
             }
-        } catch {
+        } catch(error) {
             this.leaveRoom(username);
             console.error('Error joining room:', error);
             throw error;
