@@ -59,6 +59,11 @@ class RoomRepository {
 
     async isRoomFull(roomCode) {
         let room = await this.getRoomByCode(roomCode);
+
+        if (!room) {
+            return true;
+        }
+
         return room.maxPlayers === room.currentPlayerNumber;
     }
 

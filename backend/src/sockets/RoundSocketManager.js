@@ -13,7 +13,8 @@ class RoundSocketManager {
     roomRepository = null;
     userRepository = null;
     isRoundStarted = false;
-    roundAnswerIndex = 0;
+    roundAnswerIndex = 1;
+    roundCorrectAnswerIndex = 1;
 
     constructor(roomNamespace, roomCode) {
         this.roomNamespace = roomNamespace;
@@ -101,11 +102,16 @@ class RoundSocketManager {
         // Récupérer la liste des joueurs dans la room
         // Envoyer les résultats aux joueurs
         const userIds = Object.keys(this.playersResponses);
+
+        userIds.sort((a, b) => {
+            return this.playersResponses[a].index - this.playersResponses[b].index;
+        });
+
         for (let i = 0; i < userIds.length; i++) {
             const userId = userIds[i];
             const username = this.playersResponses[userId].username;
             if (this.playersResponses[userId].answerId === this.currentCorrectAnswerId) {
-                const score = await this.computeScore(this.playersResponses[userId].index);
+                const score = await this.computeScore(this.roundCorrectAnswerIndex);
                 roundResults[userId] = { username: username, response: true, score: score };
                 this.userRepository.addScoreById(userId, score)
             } else {
@@ -117,8 +123,9 @@ class RoundSocketManager {
     }
 
     handleRoundEnd(roundResults) {
-        // Envoyer les résultats aux joueurs
-        this.roundAnswerIndex = 0;
+        // Send results to players
+        this.roundAnswerIndex = 1;
+        this.roundCorrectAnswerIndex = 1;
         this.isRoundStarted = false;
         this.roomNamespace.to(this.roomCode).emit('roundEnded', { roundResults: roundResults, room: this.roomCode });
     }
@@ -130,12 +137,22 @@ class RoundSocketManager {
     }
 
     async computeScore(index) {
-        //TODO Compute score
         const playerCount = await this.getCurrentPlayerCount();
 
-        const score =  100 * (playerCount  - (index-1)) / playerCount;
-        console.log("score", score, "index", index, "playerCount", playerCount);
-        return score;
+        // Définir le score maximum et le score minimum
+        const maxScore = 100;
+        const minScore = 10;
+
+        // Ajuster la décroissance du score en fonction du nombre de joueurs
+        const decayFactor = 0.5 * (playerCount / 10);
+
+        // Calculer un score qui diminue de manière exponentielle
+        const score = Math.max(minScore, maxScore * Math.exp(-decayFactor * (index - 1)));
+
+        console.log(index, decayFactor)
+
+        this.roundCorrectAnswerIndex++;
+        return Math.round(score);
     }
 
     // 0 = artist, 1 = title, 2 = year

@@ -1,7 +1,8 @@
 <template>
     <div class="main-frame">
         <div class="title">
-            <h2>Trouvez la réponse correct pour l'attribut : {{ questionTypeMapAttributes[currentRoundInfos.questionType] }}</h2>
+            <h2>Trouvez la réponse correct pour l'attribut : {{ questionTypeMapAttributes[currentRoundInfos.questionType] }}
+            </h2>
         </div>
         <div class="body-frame">
             <div class="players" style="display: none;">
@@ -11,7 +12,7 @@
             </div>
             <div class="art-frame">
                 <div class="img">
-                    <img :src="currentRoundInfos.image" oncontextmenu="return false;">
+                    <img :src="currentRoundInfos.image" oncontextmenu="return true;">
                 </div>
                 <div class="response" v-if="isRoundGoing()">
                     <button class="answer" v-for="artAnswer in currentRoundInfos.artAnswers"
@@ -23,11 +24,24 @@
                 </div>
 
                 <div class="roundOff-container" v-if="isRoundFinished()">
-                    <div v-for="result in currentRoundInfos.roundResults">
-                        {{ result.username }} : {{ result.score }}
+                    <div class="has-next-round" v-if="hasNextRound()">
+                        <div class="title">
+                            <h2>Score Round</h2>
+                        </div>
+                        <div v-for="result in currentRoundInfos.roundResults">
+                            {{ result.username }} : {{ result.score }}
+                        </div>
+                        <button class="leave-room" @click="startNextRound()">Next Round</button>
                     </div>
-                    <button class="leave-room" @click="startNextRound()" v-if="hasNextRound()">Next Round</button>
-                    <button class="leave-room" @click="endGame()" v-if="isGameFinished()">End Game</button>
+                    <div class="game-ended" v-if="isGameFinished()">
+                        <div class="title">
+                            <h2>Score Finale</h2>
+                        </div>
+                        <div v-for="player in store.getters.currentRoomInfos.players">
+                            {{ player.username }} : {{ player.score }}
+                        </div>
+                        <button class="leave-room" @click="endGame()">End Game</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -125,7 +139,6 @@ const shuffleArray = (array) => {
 }
 
 const submitAnswer = (artAnswerId) => {
-    props.socketManager.submitAnswer(store.getters.currentRoomInfos.code, store.getters.user, artAnswerId);
     props.socketManager.submitAnswer(store.getters.currentRoomInfos.code, store.getters.user, artAnswerId);
 }
 

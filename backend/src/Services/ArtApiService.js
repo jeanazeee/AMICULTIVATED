@@ -86,9 +86,6 @@ class ArtApiService {
                 art.completionYear === chosenArt.completitionYear
             );
             
-            console.log('isUnique', isUnique);
-            console.log('chosenArt', chosenArt);
-            console.log('chosenArtList', chosenArtList);
 
             if (isUnique) {
                 chosenArtList.push(chosenArt);
