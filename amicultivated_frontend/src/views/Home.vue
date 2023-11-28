@@ -49,7 +49,11 @@ const router = useRouter();
 
 
 const hasCurrentRoom = () => {
-    return store.getters.currentRoomInfos.code != "" || store.getters.currentRoomInfos.code != '';
+    const hasCurrentRoom = store.getters.currentRoomInfos.code != "" 
+    && store.getters.currentRoomInfos.code != '' 
+    && store.getters.currentRoomInfos.code != null 
+    && store.getters.currentRoomInfos.code != undefined;
+    return hasCurrentRoom
 }
 
 const joinRoom = async () => {

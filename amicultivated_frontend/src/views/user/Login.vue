@@ -1,6 +1,7 @@
 <template>
     <div class="form-container">
         <div class="form-front">
+            <p class="error-message" v-if="errorMessage"> {{ errorMessage }} </p>
             <p class="title">Login</p>
             <div class="form">
                 <div class="input-group">
@@ -28,20 +29,27 @@ import { ref } from 'vue'
 import { sha256 } from 'js-sha256'
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import AuthAPI from './../../api/auth_api.js'
 
 
 const username = ref('')
 const password = ref('')
 const router = useRouter();
-
 const store = useStore();
+const authApi = new AuthAPI(store);
+const errorMessage = ref()
+
+
 const login = () => {
     const hashedPassword = sha256(password.value);
-    store.dispatch('login', { username: username.value, password: hashedPassword })
-    .then(() => {
-        // Peut-être rediriger l'utilisateur ou montrer un message de succès
-        router.push({ name: 'home' });
-    })
+    authApi.login(username.value, hashedPassword)
+        .then(() => {
+            // Peut-être rediriger l'utilisateur ou montrer un message de succès
+            router.push({ name: 'home' });
+        })
+        .catch((error) => {
+            errorMessage.value = error.response.data.message;
+        })
 }
 
 </script>
@@ -50,7 +58,7 @@ const login = () => {
 .form-container {
     width: 580px;
     height: 580px;
-    display: flex;  
+    display: flex;
     margin: auto;
     margin-top: 3em;
     justify-content: center;
@@ -146,5 +154,10 @@ const login = () => {
 .line {
     height: 1px;
     background-color: rgba(55, 65, 81, 1);
+}
+
+.error-message {
+    color: red;
+    text-align: center;
 }
 </style>

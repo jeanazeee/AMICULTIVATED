@@ -6,7 +6,7 @@ const authApi = new AuthAPI();
 
 export const store = new createStore({
     state: {
-        loggedIn: (JSON.parse(localStorage.getItem('user')).username !== null && JSON.parse(localStorage.getItem('user')).token !== null),
+        loggedIn: (localStorage.getItem('user') && JSON.parse(localStorage.getItem('user')).username !== null && JSON.parse(localStorage.getItem('user')).token !== null),
         currentRoundInfos: JSON.parse(localStorage.getItem('currentRoundInfos')) || {
             imageUrl: '',
             answers: [],
@@ -32,7 +32,7 @@ export const store = new createStore({
         }
     },
     mutations: {
-        login(state, {username, token, userId, currentRoomCode}) {
+        login(state, { username, token, userId, currentRoomCode }) {
             state.loggedIn = true;
             state.currentRoomInfos.code = currentRoomCode;
             state.user = {
@@ -83,46 +83,19 @@ export const store = new createStore({
         }
     },
     actions: {
-        login: ({ commit }, { username, password }) => {
-            return authApi.login(username, password)
-                .then((response) => {
-                    const user = {
-                        userId: response.data.userId,
-                        username: username,
-                        token: response.data.token,
-                    }
-                    localStorage.setItem('user', JSON.stringify(user));
-                    const roomData = {code: response.data.currentRoomCode}
-                    localStorage.setItem('currentRoomInfos', JSON.stringify(roomData));
-                    commit('login', { username: user.username, token: user.token, userId:user.userId, currentRoomCode: response.data.currentRoomCode });
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
+        login: ({ commit }, { user, roomCode }) => {
+            console.log(user, roomCode);
+            localStorage.setItem('user', JSON.stringify(user));
+            const roomData = { code: roomCode }
+            localStorage.setItem('currentRoomInfos', JSON.stringify(roomData));
+            commit('login', { username: user.username, token: user.token, userId: user.userId, currentRoomCode: roomCode });
         },
         logout: ({ commit }) => {
             localStorage.removeItem('user');
             localStorage.removeItem('currentRoomInfos');
+            localStorage.removeItem('currentRoundInfos');
             commit('logout');
         },
-        signup: ({ commit }, { username, password }) => {
-            return authApi.signup(username, password)
-                .then((response) => {
-                    const user = {
-                        userId: response.data.userId,
-                        username: username,
-                        token: response.data.token,
-                    }
-                    localStorage.setItem('user', JSON.stringify(user));
-                    const roomData = {code: response.data.currentRoomCode}
-                    localStorage.setItem('currentRoomInfos', JSON.stringify(roomData));
-                    commit('login', { username, token: response.data.token, userId:response.data.userId , currentRoomCode: response.data.currentRoomCode });
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-        },
-        
         saveCurrentRoundInfos: ({ commit }, { currentRoundInfos }) => {
             commit('saveCurrentRoundInfos', currentRoundInfos);
             localStorage.setItem('currentRoundInfos', JSON.stringify(currentRoundInfos));

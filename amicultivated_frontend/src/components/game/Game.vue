@@ -11,7 +11,7 @@
             </div>
             <div class="art-frame">
                 <div class="img">
-                    <img :src="currentRoundInfos.image">
+                    <img :src="currentRoundInfos.image" oncontextmenu="return false;">
                 </div>
                 <div class="response" v-if="isRoundGoing()">
                     <button class="answer" v-for="artAnswer in currentRoundInfos.artAnswers"
