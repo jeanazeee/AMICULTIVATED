@@ -2,10 +2,11 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/user/Login.vue'
 import Signup from '../views/user/Signup.vue'
-import Room from '../views/game/Room.vue'
+import Profil from '../views/user/Profil.vue'
+import Room from '../views/game/room.vue'
+import {store} from '../store/store.js'
 import API from '../api/api'
 
-import { store } from '../store/store.js'
 
 const api = new API(store);
 
@@ -26,6 +27,11 @@ const router = createRouter({
       path: '/signup',
       name: 'signup',
       component: Signup
+    },
+    {
+      path: '/profil',
+      name:'profil',
+      component: Profil
     },
     {
       path: '/room/:roomCode',
@@ -64,5 +70,17 @@ const router = createRouter({
     },
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  if  ( (to.name == 'login' || to.name == 'signup') && store.getters.loggedIn == true) {
+    next('/'); 
+  }
+  else if (store.getters.loggedIn == false && to.name != 'signup' && to.name != 'login'){
+    next('/login');
+  }
+  else {
+    next();
+  }
+});
 
 export default router

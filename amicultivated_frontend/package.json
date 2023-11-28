@@ -8,14 +8,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "autoprefixer": "^10.4.16",
     "axios": "^1.6.2",
     "install": "^0.13.0",
     "npm": "^10.2.3",
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2",
     "js-sha256": "^0.10.1",
+    "tailwindcss": "^3.3.5",
+    "flowbite": "^2.2.0",
+    "flowbite-vue": "^0.1.0",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4",
+    "vuesax": "^3.12.2",
     "vuex": "^4.0.2"
   },
   "devDependencies": {

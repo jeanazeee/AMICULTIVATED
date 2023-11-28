@@ -12,7 +12,7 @@
                     <input type="password" name="password" id="password" placeholder="" v-model="password">
 
                 </div>
-                <button class="sign" @click="login()">Create account</button>
+                <button class="sign" @click="login()">Log In</button>
             </div>
             <br>
             <div class="line"></div>
@@ -50,13 +50,14 @@ const login = () => {
 .form-container {
     width: 580px;
     height: 580px;
-    display: flex;
+    display: flex;  
+    margin: auto;
+    margin-top: 3em;
     justify-content: center;
     align-items: center;
     background: rgb(17, 24, 39);
     background: radial-gradient(circle, rgba(17, 24, 39, 1) 0%, rgba(21, 31, 54, 1) 100%);
     border-radius: 0.75rem;
-    margin: auto;
 }
 
 .form-front {
