@@ -18,7 +18,7 @@
           <button @click="joinRoom()">Rejoindre la room</button>
         </div>
         <div class="main-create">
-          <h2>ou</h2>
+          <center><h2>ou</h2></center>
           <button  @click="createRoom()">Créer une room</button>
         </div>
       </div>
