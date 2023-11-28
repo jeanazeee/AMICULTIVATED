@@ -18,7 +18,7 @@
           <button @click="joinRoom()">Rejoindre la room</button>
         </div>
         <div class="main-create">
-          <center><h2>ou</h2></center>
+          <h2>ou</h2>
           <button  @click="createRoom()">Créer une room</button>
         </div>
       </div>
@@ -93,7 +93,6 @@ const createRoom = async () => {
   color: red;
 }
 .title {
-  color: white;
   margin: 0 auto;
   text-align: center;
   padding-bottom: 1em;
@@ -216,5 +215,9 @@ h2 {
   padding-right:1em;
 }
 
+.main-create h2 {
+  display: flex;
+  justify-content: center;
+}
 
 </style>

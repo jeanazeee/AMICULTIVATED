@@ -6,7 +6,7 @@
         <div class="items">
             <ul>
                 <li><a href="/profil">Profil</a></li>
-                <li><a href="/Leaderboard">Leaderboard</a></li>
+                <li><a href="/leaderboard">Leaderboard</a></li>
             </ul>
         </div>
         <div class="logout">

@@ -4,6 +4,9 @@ import Login from '../views/user/Login.vue'
 import Signup from '../views/user/Signup.vue'
 import Profil from '../views/user/Profil.vue'
 import Room from '../views/game/Room.vue'
+import Comming from '../views/default/Comming.vue'
+import Notfound from '../views/default/Notfound.vue'
+import Endgame from '../components/game/Endgame.vue'
 import {store} from '../store/store.js'
 import API from '../api/api'
 
@@ -13,6 +16,11 @@ const api = new API(store);
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    { 
+      path: '/:pathMatch(.*)*',
+      name: '404 Not Found',
+      component: Notfound 
+    },
     {
       path: '/',
       name: 'home',
@@ -32,6 +40,16 @@ const router = createRouter({
       path: '/profil',
       name:'profil',
       component: Profil
+    },
+    {
+      path: '/leaderboard',
+      name:'leaderboard',
+      component: Comming
+    },
+    {
+      path: '/endgame',
+      name:'endgame',
+      component: Endgame
     },
     {
       path: '/room/:roomCode',
@@ -70,12 +88,13 @@ const router = createRouter({
   ]
 })
 
+console.log(store.getters.currentRoomCode)
 router.beforeEach((to, from, next) => {
   if  ( (to.name == 'login' || to.name == 'signup') && store.getters.loggedIn == true) {
-    next('/'); 
+    next({name: 'home'}); 
   }
-  else if ((!store.getters.loggedIn || store.getters.loggedIn == false)  && to.name != 'signup' && to.name != 'login'){
-    next('/login');
+  else if ((!store.getters.loggedIn || store.getters.loggedIn == false)  && to.name != 'signup' && to.name != 'login' ){
+    next({name: 'login'});
   }
   else {
     next();
