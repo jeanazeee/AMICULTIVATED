@@ -31,7 +31,6 @@
             </div>
         </div>
         <div class="roundOn-container" v-if="isRoundGoing()">
-            <img :src="currentRoundInfos.image" alt="">
             <div class="answers">
                 <button class="answer" v-for="artAnswer in currentRoundInfos.artAnswers"
                     @click="submitAnswer(artAnswer.id)">
@@ -48,9 +47,6 @@
             <button @click="startNextRound()" v-if="hasNextRound()">Next Round</button>
             <button @click="endGame()" v-if="isGameFinished()">End Game</button>
         </div>
-        <div class="restart-room">
-            <button class="full-button" @click="leaveGame()">Quitter la Room</button>
-        </div>
     </div>
 
     <div class="leave-room">
@@ -62,7 +58,6 @@
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { onMounted, ref } from 'vue';
-import { useStore } from 'vuex';
 
 const router = useRouter();
 const loading = ref(false);
