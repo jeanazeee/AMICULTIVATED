@@ -4,9 +4,14 @@
             <h2>Trouvez la réponse correct pour l'attribut Titre de l'oeuvre</h2>
         </div>
         <div class="body-frame">
-            <div class="players">
-                <div class="player-card" v-for="player in props.roomInfos.players" :key="player.id">
-                    {{ player }}
+            <div class="left">
+                <div class="players">
+                    <div class="player-card" v-for="player in props.roomInfos.players" :key="player.id">
+                        {{ player }}
+                    </div>
+                </div>
+                <div class="leave-room">
+                    <button class="full-button" @click="leaveRoom()" >Quitter la Room</button>
                 </div>
             </div>
             <div class="art-frame">
@@ -14,22 +19,20 @@
                     <img src="./../../assets/art.jpg">
                 </div>
                 <div class="response">
-                   <div class="rowonebutton">
                     <button>1988</button>
                     <button>1988</button>
-                   </div> 
-                   <div class="rowtwobutton">
                     <button>1988</button>
                     <button>1988</button>
-                   </div> 
                 </div>
             </div>
+            <div class="next">
+                    <button class="full-button" @click="next()" >Partie suivante</button>
+            </div>
         </div>
+        
     </div>
 
-    <div class="leave-room">
-        <button class="full-button" @click="leaveRoom()" >Quitter la Room</button>
-    </div>
+    
 </template>
 
 <script setup>
@@ -41,7 +44,8 @@ const router = useRouter();
 const emit = defineEmits(['leaveRoom']);
 
 const props = defineProps({
-    roomInfos: Object
+    roomInfos: Object,
+    errorMessage: String
 });
 
 const leaveRoom = async () => {
@@ -52,10 +56,8 @@ const leaveRoom = async () => {
 
 <style scoped>
 
-.players {
-    background-color: aliceblue;
+.left {
     float: left;
-    
 }
 .title {
     text-align: center;
@@ -69,17 +71,44 @@ const leaveRoom = async () => {
 }
 
 .img {
-    width: 40%;
     margin: auto;
     border: 4px solid white;
 }
 
+.art-frame {
+    width:40%;
+    margin: auto;
+    
+}
+
+.next {
+    margin: auto;
+    margin-top: 2em;
+    width: 10em;
+    padding:1em;
+    background-color: purple;
+    border-radius:5px;
+    margin-bottom: 5em;
+    text-align: center;
+}
+
+.next:hover {
+    margin: auto;
+    text-align: center;
+    padding:1em;
+    margin-top: 2em;
+    width: 10em;
+    background-color: purple;
+    color: white;
+    border-radius:5px;
+}
 .leave-room {
     margin: auto;
     margin-top: 2em;
     width: 7em;
     background-color: purple;
     border-radius:5px;
+    margin-bottom: 5em;
 }
 
 .leave-room:hover {
@@ -93,8 +122,35 @@ const leaveRoom = async () => {
 .response {
     margin: auto;
     width: 100%;
+    padding-top: 1em;
 }
-.rowonebutton {
 
+.response button {
+    margin:0.4em;
+    width:45%;
+    height: auto;
+    border-radius: 1em;
+    color: grey;
+    font-size: large;
+    font-weight:700 ;
+    background-color: white;
+    transition: 1s;
 }
+
+.response button:hover {
+    margin:0.2em;
+    width:45%;
+    border-radius: 1em;
+    color: grey;
+    font-size: large;
+    font-weight:700 ;
+    background-color: lightsalmon;
+    transition: 1s;
+}
+
+.players{
+    margin-left:3em ;
+    background-color: white;
+}
+
 </style>
