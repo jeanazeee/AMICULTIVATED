@@ -34,7 +34,7 @@
     </div>
 
     <div class="leave-room">
-        <button class="full-button" @click="leaveRoom()">Quitter la Room</button>
+        <button class="full-button" @click="leaveGame()">Quitter la Room</button>
     </div>
 </template>
 
