@@ -74,7 +74,7 @@ router.beforeEach((to, from, next) => {
   if  ( (to.name == 'login' || to.name == 'signup') && store.getters.loggedIn == true) {
     next('/'); 
   }
-  else if (store.getters.loggedIn == false && to.name != 'signup' && to.name != 'login'){
+  else if ((!store.getters.loggedIn || store.getters.loggedIn == false)  && to.name != 'signup' && to.name != 'login'){
     next('/login');
   }
   else {
