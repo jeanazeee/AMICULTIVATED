@@ -81,11 +81,15 @@ class ArtApiService {
     
             // Check if the chosen art is unique in terms of title, artistName, and completionYear
             const isUnique = !chosenArtList.some(art => 
-                art.title === chosenArt.title && 
-                art.artistName === chosenArt.artistName &&
-                art.completionYear === chosenArt.completionYear
+                art.title === chosenArt.title ||
+                art.artistName === chosenArt.artistName ||
+                art.completionYear === chosenArt.completitionYear
             );
-    
+            
+            console.log('isUnique', isUnique);
+            console.log('chosenArt', chosenArt);
+            console.log('chosenArtList', chosenArtList);
+
             if (isUnique) {
                 chosenArtList.push(chosenArt);
             }
