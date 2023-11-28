@@ -6,7 +6,7 @@ const authApi = new AuthAPI();
 
 export const store = new createStore({
     state: {
-        loggedIn: (localStorage.getItem('usename') !== null && localStorage.getItem('token') !== null),
+        loggedIn: (JSON.parse(localStorage.getItem('user')).username !== null && JSON.parse(localStorage.getItem('user')).token !== null),
         currentRoundInfos: JSON.parse(localStorage.getItem('currentRoundInfos')) || {
             imageUrl: '',
             answers: [],
