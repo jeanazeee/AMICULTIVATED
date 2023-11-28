@@ -5,9 +5,16 @@
             </h2>
         </div>
         <div class="body-frame">
-            <div class="players" style="display: none;">
-                <div class="player-card" v-for="player in props.roomInfos.players" :key="player.id">
-                    {{ player }}
+            <div class="left">
+                
+                <div class="players">
+                    <h2>Joueurs</h2>
+                    <div class="player-card" v-for="player in props.roomInfos.players" :key="player.id">
+                        {{ player }}
+                    </div>
+                </div>
+                <div class="leave-room">
+                    <button class="full-button" @click="leaveRoom()" >Quitter la Room</button>
                 </div>
             </div>
             <div class="art-frame">
@@ -185,8 +192,15 @@ const isLoading = () => {
 </script>
 
 <style scoped>
+
+.text-players {
+    width: 10%;
+    writing-mode: vertical-lr;
+}
 .left {
     float: left;
+    width: 20%;
+    margin-left: 5%;
 }
 
 .title {
@@ -237,7 +251,7 @@ const isLoading = () => {
     margin: auto;
     margin-top: 2em;
     width: 7em;
-    background-color: purple;
+    background-color: black;
     border-radius: 5px;
     margin-bottom: 5em;
 }
@@ -246,7 +260,7 @@ const isLoading = () => {
     margin: auto;
     margin-top: 2em;
     width: 7em;
-    background-color: purple;
+    background-color: rgb(55, 40, 55);
     color: white;
     border-radius: 5px;
 }
@@ -258,8 +272,8 @@ const isLoading = () => {
 }
 
 .response button {
-    margin: 0.4em;
-    width: 45%;
+    width:48%;
+    margin:1%;
     height: auto;
     border-radius: 1em;
     color: grey;
@@ -275,6 +289,7 @@ const isLoading = () => {
     margin: 0.2em;
     width: 45%;
     border-radius: 1em;
+    margin:1%;
     color: grey;
     font-size: large;
     font-weight: 700;
@@ -298,6 +313,32 @@ const isLoading = () => {
 .players {
     margin-left: 3em;
     background-color: white;
+}
+
+.players h2 {
+    background-color: grey;
+    text-align: center;
+    color:white;
+}
+
+.player-card{
+    color: black;
+    font-weight: 600;
+    font-size: x-large;
+    padding: 0.2em;
+}
+
+.players h2 {
+    background-color: grey;
+    text-align: center;
+    color:white;
+}
+
+.player-card{
+    color: black;
+    font-weight: 600;
+    font-size: x-large;
+    padding: 0.2em;
 }
 
 
