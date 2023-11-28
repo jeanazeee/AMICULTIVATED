@@ -214,7 +214,8 @@ const isLoading = () => {
     margin-top: 2em;
 }
 
-.img {
+.img img {
+    width: auto;
     margin: auto;
     border: 4px solid white;
 }
@@ -225,26 +226,29 @@ const isLoading = () => {
 
 }
 
-.next {
+.next button {
     margin: auto;
     margin-top: 2em;
     width: 10em;
     padding: 1em;
     background-color: purple;
     border-radius: 5px;
-    margin-bottom: 5em;
+    margin-bottom: 2em;
     text-align: center;
 }
 
-.next:hover {
+.next button:hover {
     margin: auto;
     text-align: center;
     padding: 1em;
     margin-top: 2em;
     width: 10em;
-    background-color: purple;
+    padding:1em;
+    background-color: rgb(134, 34, 134);
+    border-radius:5px;
+    margin-bottom: 2em;
+    text-align: center;
     color: white;
-    border-radius: 5px;
 }
 
 .leave-room {
@@ -326,6 +330,16 @@ const isLoading = () => {
     font-weight: 600;
     font-size: x-large;
     padding: 0.2em;
+}
+
+.next {
+    display: flex;
+    justify-content: center;
+}
+
+.next {
+    display: flex;
+    justify-content: center;
 }
 
 .players h2 {
