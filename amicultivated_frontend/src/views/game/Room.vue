@@ -1,7 +1,7 @@
 <template>
     <RoomStarting v-if="isGameOpen()" :roomInfos="roomInfo" :errorMessage="errorMessage" @startGame="startGame"
         @leaveRoom="leaveRoom" @updateRoom="sendUpdateRoom" />
-    <Game v-if="isGameStarted()" :roomInfos="roomInfo" @restartGame="restartRoom" />
+    <Game v-if="isGameStarted()" :roomInfos="roomInfo"  @leaveRoom="leaveRoom" />
 </template>
 
 <script setup>
