@@ -90,7 +90,7 @@ export const store = new createStore({
                         token: response.data.token,
                     }
                     localStorage.setItem('user', JSON.stringify(user));
-                    roomData = {code: response.data.currentRoomCode}
+                    const roomData = {code: response.data.currentRoomCode}
                     localStorage.setItem('currentRoomInfos', JSON.stringify(roomData));
                     commit('login', { username: user.username, token: user.token, userId:user.userId, currentRoomCode: response.data.currentRoomCode });
                 })
@@ -112,7 +112,7 @@ export const store = new createStore({
                         token: response.data.token,
                     }
                     localStorage.setItem('user', JSON.stringify(user));
-                    roomData = {code: response.data.currentRoomCode}
+                    const roomData = {code: response.data.currentRoomCode}
                     localStorage.setItem('currentRoomInfos', JSON.stringify(roomData));
                     commit('login', { username, token: response.data.token, userId:response.data.userId , currentRoomCode: response.data.currentRoomCode });
                 })
