@@ -147,6 +147,8 @@ const submitAnswer = (artAnswerId) => {
 }
 
 const startNextRound = () => {
+    currentRoundInfos.value.hasAnswered = false;
+    store.dispatch('saveCurrentRoundInfos', { currentRoundInfos: currentRoundInfos.value })
     props.socketManager.startNextRound(store.getters.currentRoomInfos.code);
 }
 
