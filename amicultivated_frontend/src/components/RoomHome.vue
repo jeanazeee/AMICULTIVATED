@@ -14,7 +14,7 @@
         </div>
         <div class="leave-room" v-if="hasCurrentRoom()">
             <button class="full-button" @click="leaveRoom()">Quitter la Room</button>
-            <p id="room-code">Votre code de Room est : {{ store.state.currentRoomCode }}</p>
+            <p id="room-code">Votre code de Room est : {{ store.getters.currentRoomInfos.code }}</p>
         </div>
     </div>
 </template>
@@ -25,7 +25,7 @@ import API from './../api/api.js'
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 
-
+const room = ref()
 const roomCode = ref()
 const store = useStore();
 const api = new API(store);
@@ -34,13 +34,13 @@ const router = useRouter();
 
 
 const hasCurrentRoom = () => {
-    return store.state.currentRoomCode != "";
+    return store.getters.currentRoomInfos.code != "" || store.getters.currentRoomInfos.code != '';
 }
 
 const joinRoom = async () => {
     try {
         if(roomCode.value == "") throw new Error("Le code de la room ne peut pas être vide");
-        let username = store.state.username;
+        let username = store.getters.user.username;
         await api.joinRoom(roomCode.value, username)
         router.push({ name: 'room', params: { roomCode: roomCode.value } });
     } catch (error) {
@@ -51,7 +51,7 @@ const joinRoom = async () => {
 
 const leaveRoom = async () => {
     try {
-        let username = store.state.username;
+        let username = store.getters.user.username;
         await api.leaveRoom(username)
     } catch (error) {
         errorMessage.value = "Erreur : " + error;
@@ -60,9 +60,9 @@ const leaveRoom = async () => {
 
 const createRoom = async () => {
     try {
-        let username = store.state.username;
-        roomCode.value = await api.createRoom(username);
-        router.push({ name: 'room', params: { roomCode: roomCode.value } });
+        let username = store.getters.user.username;
+        room.value = await api.createRoom(username);
+        router.push({ name: 'room', params: { roomCode: room.value.code } });
     } catch (error) {
         console.error(error);
         errorMessage.value = "Erreur : " + error.response.data.message;

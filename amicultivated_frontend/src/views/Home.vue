@@ -18,7 +18,7 @@
           <button @click="joinRoom()">Rejoindre la room</button>
         </div>
         <div class="main-create">
-          <h2>ou</h2>
+          <center><h2>ou</h2></center>
           <button  @click="createRoom()">Créer une room</button>
         </div>
       </div>
@@ -26,7 +26,7 @@
   </div>
     <div class="leave-room" v-if="hasCurrentRoom()">
       <button class="full-button" @click="leaveRoom()">Quitter la Room</button>
-      <p id="room-code">Votre code de Room est : {{ store.state.currentRoomCode }}</p>
+      <p id="room-code">Votre code de Room est : {{ store.getters.currentRoomInfos.code }}</p>
     </div>
   </main>
 </template>
@@ -39,6 +39,8 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 
 
+
+const room = ref()
 const roomCode = ref()
 const store = useStore();
 const api = new API(store);
@@ -47,13 +49,17 @@ const router = useRouter();
 
 
 const hasCurrentRoom = () => {
-    return store.state.currentRoomCode != "";
+    const hasCurrentRoom = store.getters.currentRoomInfos.code != "" 
+    && store.getters.currentRoomInfos.code != '' 
+    && store.getters.currentRoomInfos.code != null 
+    && store.getters.currentRoomInfos.code != undefined;
+    return hasCurrentRoom
 }
 
 const joinRoom = async () => {
     try {
         if(roomCode.value == "") throw new Error("Le code de la room ne peut pas être vide");
-        let username = store.state.username;
+        let username = store.getters.user.username;
         await api.joinRoom(roomCode.value, username)
         router.push({ name: 'room', params: { roomCode: roomCode.value } });
     } catch (error) {
@@ -61,22 +67,20 @@ const joinRoom = async () => {
     }
 }
 
-
 const leaveRoom = async () => {
     try {
-        let username = store.state.username;
+        let username = store.getters.user.username;
         await api.leaveRoom(username)
-        router.push({ name: 'home' });
     } catch (error) {
-        handleError(error);
+        errorMessage.value = "Erreur : " + error;
     }
 }
 
 const createRoom = async () => {
     try {
-        let username = store.state.username;
-        roomCode.value = await api.createRoom(username);
-        router.push({ name: 'room', params: { roomCode: roomCode.value } });
+        let username = store.getters.user.username;
+        room.value = await api.createRoom(username);
+        router.push({ name: 'room', params: { roomCode: room.value.code } });
     } catch (error) {
         console.error(error);
         errorMessage.value = "Erreur : " + error.response.data.message;

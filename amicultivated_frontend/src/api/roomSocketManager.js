@@ -16,17 +16,17 @@ class RoomSocketManager {
         return this.instance;
     }
 
-    joinRoom(roomCode, userName) {
+    joinRoom(roomCode, user) {
         this.socket.emit('joinRoom', {
             roomCode: roomCode,
-            username: userName
+            user: user
         });
     }
 
-    leaveRoom(roomCode, userName) {
+    leaveRoom(roomCode, user) {
         this.socket.emit('leaveRoom', {
             roomCode: roomCode,
-            username: userName
+            user: user
         });
     }
 
@@ -39,7 +39,31 @@ class RoomSocketManager {
 
     startGame(roomCode) {
         this.socket.emit('startGame', {
+            roomCode: roomCode,
+            difficulty: 0,
+            artId: ""
+        });
+    }
+
+    endGame(roomCode) {
+        this.socket.emit('endGame', {
             roomCode: roomCode
+        });
+    }
+
+    submitAnswer(roomCode, user, answerId) {
+        this.socket.emit('submitAnswer', {
+            roomCode: roomCode,
+            user: user,
+            answerId: answerId
+        });
+    }
+
+    startNextRound(roomCode) {
+        this.socket.emit('nextRound', {
+            roomCode: roomCode,
+            difficulty: 0,
+            artId: ""
         });
     }
 
@@ -56,7 +80,19 @@ class RoomSocketManager {
     }
 
     onGameStarted(callback) {
-        this.socket.on('startGame', callback);
+        this.socket.on('gameStarting', callback);
+    }
+
+    onRoundStarted(callback){
+        this.socket.on('roundStarted', callback);
+    }
+
+    onRoundEnded(callback){
+        this.socket.on('roundEnded', callback);
+    }
+
+    onGameEnded(callback){
+        this.socket.on('gameEnded', callback);
     }
 
     offUserJoined(callback) {
@@ -72,7 +108,19 @@ class RoomSocketManager {
     }
 
     offGameStarted(callback) {
-        this.socket.off('startGame', callback);
+        this.socket.off('gameStarting', callback);
+    }
+
+    offRoundStarted(callback){
+        this.socket.off('roundStarted', callback);
+    }
+
+    offRoundEnded(callback){
+        this.socket.off('roundEnded', callback);
+    }
+
+    offGameEnded(callback){
+        this.socket.off('gameEnded', callback);
     }
 }
 

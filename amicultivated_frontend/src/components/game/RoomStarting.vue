@@ -2,8 +2,8 @@
     <div class="room-container">
         <div class="room-frame">
             <div class="player-list">
-                <div class="player-card" v-for="player in props.roomInfos.players" :key="player.id">
-                    {{ player }}
+                <div class="player-card" v-for="playerInfo in props.roomInfos.players" :key="playerInfo.id">
+                    {{ playerInfo.username }}
                 </div>
             </div>
             <div class="main">
@@ -55,19 +55,8 @@ const props = defineProps({
 const emit = defineEmits(['startGame', 'leaveRoom', 'updateRoom']);
 
 
-
-    // watch route params for changes
-    watch(async () => route.params.roomCode, async (newRoomCode) => {
-        getUpdateRoom();
-        initSocketHandlers();
-    });
-
-
 const startGame = () => {
-    emit('startGame').catch((error) => {
-        console.log(error);
-        errorMessage.value = "Erreur : " + error;
-    })
+    emit('startGame')
 }
 
 const leaveRoom = async () => {

@@ -1,6 +1,7 @@
 <template>
     <div class="form-container">
         <div class="form-front">
+            <p class="error-message" v-if="errorMessage"> {{ errorMessage }} </p>
             <p class="title">Sign Up</p>
             <div class="form">
                 <div class="input-group">
@@ -26,24 +27,26 @@
 <script setup>
 import { ref } from 'vue'
 import { sha256 } from 'js-sha256'
-import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+import AuthAPI from './../../api/auth_api.js'
 const username = ref('')
 const password = ref('')
-
+const errorMessage = ref()
 const store = useStore();
-
 const router = useRouter();
+const authApi = new AuthAPI(store);
 
 const signup = () => {
     const hashedPassword = sha256(password.value);
-    store.dispatch('signup', { username: username.value, password: hashedPassword })
+    authApi.signup(username.value, hashedPassword)
         .then(() => {
+            // Peut-être rediriger l'utilisateur ou montrer un message de succès
             router.push({ name: 'home' });
         })
         .catch((error) => {
-            // Gérer les erreurs de l'inscription
-        });
+            errorMessage.value = error.response.data.message;
+        })
 };
 
 </script>
@@ -148,5 +151,11 @@ const signup = () => {
 .line {
     height: 1px;
     background-color: rgba(55, 65, 81, 1);
+}
+
+
+.error-message {
+    color: red;
+    text-align: center;
 }
 </style>

@@ -1,23 +1,42 @@
 import RoomModel from '../Model/RoomModel.js';
+import UserRepository from './UserRepository.js';
 class RoomRepository {
     model = null
-
+    userRepository = null
     constructor() {
         this.model = RoomModel.getInstance().getModel();
+        this.userRepository = new UserRepository();
     }
 
-    createRoom = (roomCode, maxPlayers, status, adminId) => {
+    createRoom = (roomCode, maxPlayers, maxRounds, status, adminId) => {
         return this.model.create({
             code: roomCode,
             currentPlayerNumber: 1,
             maxPlayers: maxPlayers,
+            maxRounds: maxRounds,
             status: status,
             adminId: adminId
         });
     }
 
     async getRoomByCode(roomCode) {
-        return await this.model.findOne({ where: { code: roomCode } });
+        const room = await this.model.findOne({ where: { code: roomCode } });
+        if (!room) {
+            return;
+        }
+        let roomData = {
+            id: room.id,
+            maxPlayers: room.maxPlayers,
+            currentPlayerNumber: room.currentPlayerNumber,
+            maxRounds: room.maxRounds,
+            status: room.status,
+            code: room.code,
+            players: {}
+        }
+        roomData.players = (await this.userRepository.getUsersByRoomId(roomData.id)).map(user => {
+            return {username: user.username, score: user.score};
+        });
+        return roomData;
     }
 
     async getRoomById(roomId) {
@@ -40,12 +59,17 @@ class RoomRepository {
 
     async isRoomFull(roomCode) {
         let room = await this.getRoomByCode(roomCode);
+
+        if (!room) {
+            return true;
+        }
+
         return room.maxPlayers === room.currentPlayerNumber;
     }
 
     async isRoomClosed(roomCode) {
         let room = await this.getRoomByCode(roomCode);
-        return room.status === "Closed";
+        return room.status === "Finished" || room.status === "Stared";
     }
 
     async isRoomJoinable(roomCode) {

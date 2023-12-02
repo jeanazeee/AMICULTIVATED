@@ -26,9 +26,10 @@ class API {
                 username: username
             });
             if(response.status === 200){
-                this.store.dispatch('setCurrentRoomCode', { currentRoomCode: roomCode })
+                let roomData = response.data.room;
+                this.store.dispatch('saveCurrentRoomInfos', { currentRoomInfos: roomData })
             }
-        } catch {
+        } catch(error) {
             this.leaveRoom(username);
             console.error('Error joining room:', error);
             throw error;
@@ -42,8 +43,8 @@ class API {
             });
             if(response.status === 200){
                 let roomCode = response.data.code;
-                this.roomSocketManager.leaveRoom(roomCode, username);
-                this.store.dispatch('deleteCurrentRoomCode'); 
+                this.roomSocketManager.leaveRoom(roomCode, this.store.getters.user);
+                this.store.dispatch('deleteRoomInfos'); 
             }
         }catch(error){
             console.error('Error leaving room:', error);
@@ -55,21 +56,19 @@ class API {
         try {
             const body = {
                 maxPlayers: 5,
-                username: username
+                username: username,
+                maxRounds: 2,
             };
     
             const response = await this.api.post('room/create', body);
-
-
             if(response.status === 201){
-                let roomCode = response.data.room.code;
-                this.roomSocketManager.joinRoom(roomCode, username);
-                this.store.dispatch('setCurrentRoomCode', { currentRoomCode: roomCode })
+                let roomData = response.data.room;
+                this.store.dispatch('saveCurrentRoomInfos', { currentRoomInfos: roomData })
             }else{
                 throw response;
             }
 
-            return this.store.state.currentRoomCode; 
+            return this.store.getters.currentRoomInfos;
         } catch (error) {
             this.leaveRoom(username);
             console.error('Error creating room:', error);
@@ -81,6 +80,7 @@ class API {
         try {
             const response = await this.api.get(`room/${roomCode}`);
             if(response.status === 200){
+                this.store.dispatch('saveCurrentRoomInfos', { currentRoomInfos: response.data.room })
                 return response.data;
             }else{
                 throw response;
@@ -114,7 +114,8 @@ class API {
             const response = await this.api.post(`room/${roomCode}/start`);
             if(response.status === 200){
                 this.roomSocketManager.startGame(roomCode);
-                return response.data;
+                this.store.dispatch('changeRoomStatus', { status: response.data.status });
+                return response.data.status;
             }else{
                 throw response;
             }
@@ -123,6 +124,43 @@ class API {
             throw error;
         }
     }
+
+    async endGame(roomCode){
+        try {
+            const response = await this.api.post(`room/${roomCode}/end`);
+            if(response.status === 200){
+                this.roomSocketManager.endGame(roomCode);
+                this.store.dispatch('changeRoomStatus', { status: response.data.status });
+                return response.data.status;
+            }else{
+                throw response;
+            }
+        } catch {
+            console.error('Error ending game:', error);
+            throw error;
+        }
+    }
+
+    async getScoresByRoom(roomCode){
+        try {
+            const response = await this.api.get(`room/${roomCode}/scores`);
+            if(response.status === 200){
+                const scores = response.data.scores;
+                const currentRoomInfos = this.store.getters.currentRoomInfos;
+                //for each player in players update his score
+                for (let i = 0; i < currentRoomInfos.players.length; i++) {
+                    currentRoomInfos.players[i].score = scores[currentRoomInfos.players[i].username];
+                }
+                this.store.dispatch('saveCurrentRoomInfos', {currentRoomInfos});
+                return response.data.scores;
+            }else{
+                throw response;
+            }
+        } catch {
+            console.error('Error getting scores:', error);
+            throw error;
+        }
+    }
 }
 
-export default API;
+export default API; 
