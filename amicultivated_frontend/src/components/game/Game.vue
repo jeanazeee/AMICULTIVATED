@@ -93,6 +93,7 @@ const initSocketHandlers = () => {
         currentRoundInfos.value.roundStatus = "Going"
         currentRoundInfos.value.roundNumber++;
         currentRoundInfos.value.questionType = data.questionType;
+        currentRoundInfos.value.hasAnswered = false;
         store.dispatch('saveCurrentRoundInfos', { currentRoundInfos: currentRoundInfos.value })
         loading.value = false;
     });

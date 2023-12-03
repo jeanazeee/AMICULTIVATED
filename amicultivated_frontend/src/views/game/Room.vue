@@ -66,6 +66,8 @@ const startGame = async () => {
 const endGame = async () => {
     try {
         await api.endGame(roomCode.value);
+        await api.leaveRoom(store.getters.user.username);
+        router.push({ name: 'home' });
     } catch (error) {
         handleError(error);
     }
