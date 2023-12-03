@@ -4,7 +4,7 @@ class RoomSocketManager {
 
     static instance = null;
     socket = null;
-
+getInstance
     constructor() {
         this.socket = io('http://localhost:3000/room');
     }
@@ -30,10 +30,11 @@ class RoomSocketManager {
         });
     }
 
-    updateRoom(roomCode, maxPlayers) {
+    updateRoom(roomCode, maxPlayers, maxRounds) {
         this.socket.emit('updateRoom', {
             roomCode: roomCode,
-            maxPlayers: maxPlayers
+            maxPlayers: maxPlayers,
+            maxRounds: maxRounds
         });
     }
 

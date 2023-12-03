@@ -47,7 +47,7 @@ class RoomSocketHandler {
 
     attachRoomEventListeners(socket, roomCode, user) {
         const roomNamespace = this.io.of("/room");
-        socket.on("updateRoom", async ({ roomCode, maxPlayers }) => {
+        socket.on("updateRoom", async ({ roomCode, maxPlayers, maxRounds }) => {
             Logger.info(`Utilisateur ${user.username} a changé les paramètres de la room: ${roomCode}`);
             roomNamespace.to(roomCode).emit('updateRoom', { room: roomCode });
         });

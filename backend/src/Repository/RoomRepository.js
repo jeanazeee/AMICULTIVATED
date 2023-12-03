@@ -76,8 +76,8 @@ class RoomRepository {
         return !(await this.isRoomFull(roomCode)) && !(await this.isRoomClosed(roomCode));
     }
 
-    async updateMaxPlayers(roomCode, maxPlayers) {
-        return await this.model.update({ maxPlayers: maxPlayers }, { where: { code: roomCode } });
+    async updateRoomSettings(roomCode, maxPlayers, maxRounds) {
+        return await this.model.update({ maxPlayers: maxPlayers, maxRounds: maxRounds }, { where: { code: roomCode } });
     }
 }
 

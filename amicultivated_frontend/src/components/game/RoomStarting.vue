@@ -10,14 +10,21 @@
                 <div v-if="errorMessage != ''">{{ errorMessage }}</div>
                 <div class="title">Room : {{ roomCode }}</div>
                 <div class="settings">
-                    <div class="max-players">
+                    <div class="slider-settings">
                         <label for="playerRange">Nombre de joueurs max</label>
                         <div class="slider">
                             <input type="range" name="playerRange" id="" v-model="props.roomInfos.maxPlayers" max="12"
                                 @change="sliderChange()">
                             {{ props.roomInfos.maxPlayers }}
                         </div>
-
+                    </div>
+                    <div class="slider-settings">
+                        <label for="roundRange">Nombre de Round max</label>
+                        <div class="slider">
+                            <input type="range" name="roundRange" id="" v-model="props.roomInfos.maxRounds" max="12" min="1"
+                                @change="sliderChange()">
+                            {{ props.roomInfos.maxRounds }}
+                        </div>
                     </div>
                     <div class="copy-link">
                         <input type="text" name="" id="" :value="fullPath" disabled>
@@ -37,13 +44,11 @@
 
 <script setup>
 import { useRoute, useRouter } from 'vue-router';
-import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { ref } from 'vue';
 import { useStore } from 'vuex';
 
-const router = useRouter();
 const route = useRoute();
 const roomCode = ref(route.params.roomCode);
-const store = useStore();
 const errorMessage = ref("");
 const fullPath = ref(window.location.origin + route.fullPath);
 
@@ -64,6 +69,7 @@ const leaveRoom = async () => {
 }
 
 const sliderChange = () => {
+    console.log(props.roomInfos)
     emit('updateRoom', props.roomInfos)
 }
 
@@ -125,6 +131,7 @@ const copyPath = () => {
 
 .main .settings {
     height: 80%;
+
 }
 
 .main .start-game {
@@ -156,7 +163,11 @@ const copyPath = () => {
     font-size: 1.5rem;
 }
 
-.settings .max-players label {
+.settings div {
+    margin-bottom: 20px;
+}
+
+.settings .slider-settings label {
     margin-right: 20px;
 }
 
@@ -166,7 +177,7 @@ const copyPath = () => {
     align-items: center;
 }
 
-.max-players {
+.slider-settings {
     display: flex;
 }
 
