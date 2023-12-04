@@ -77,7 +77,6 @@ class RoomRepository {
     }
 
     async updateSettings(roomCode, maxPlayers, maxRounds) {
-        console.log(maxRounds);
         return await this.model.update({ maxPlayers: maxPlayers, maxRounds: maxRounds }, { where: { code: roomCode } });
     }
 }

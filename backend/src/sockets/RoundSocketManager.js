@@ -30,6 +30,8 @@ class RoundSocketManager {
             return;
         }
 
+        this.roomNamespace.to(this.roomCode).emit('roundLoading', { room: this.roomCode });
+
         this.isRoundStarted = true;
         difficulty = parseInt(difficulty);
 
@@ -41,7 +43,6 @@ class RoundSocketManager {
         }
         // Sélectionner une œuvre d'art et envoyer les détails aux joueurs de la room
         this.chosenArtList = await ArtApiService.selectArtworkForRound(difficulty, artId);
-        //TODO 
         // Choose the correct answer, shuffle the list and send it to the players
         const questionType = this.chooseQuestionType();
         this.roomNamespace.to(this.roomCode).emit('roundStarted', { artInfo: this.chosenArtList, room: this.roomCode, questionType: questionType });
@@ -124,10 +125,13 @@ class RoundSocketManager {
     }
 
     handleRoundEnd(roundResults) {
-        const answerData = {
-            artist: this.chosenArtList[0].artistName,
-            title: this.chosenArtList[0].title,
-            year: this.chosenArtList[0].completitionYear,
+        let answerData = {}
+        if (!!this.chosenArtList[0]) {
+            answerData = {
+                artist: this.chosenArtList[0].artistName,
+                title: this.chosenArtList[0].title,
+                year: this.chosenArtList[0].completitionYear,
+            }
         }
         // Send results to players
         this.roundAnswerIndex = 1;

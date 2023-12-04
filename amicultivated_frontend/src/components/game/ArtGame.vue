@@ -70,9 +70,9 @@ const submitAnswer = (artAnswerId) => {
 .response {
     padding-top: 1em;
     display: grid;
-    grid-template-columns: auto auto; /* Deux colonnes */
-    grid-template-rows: auto auto; /* Deux rangées */
-    gap: 10px; /* Espace entre les boutons */
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto;
+    gap: 10px;
 }
 .answer-button-container {
     margin: 1%;
@@ -96,14 +96,10 @@ const submitAnswer = (artAnswerId) => {
 
 .answer-button:disabled,
 .answer-button:disabled:hover {
-    margin: 0.4em;
+    width: 100%;
     background-color: #cccccc;
-    /* Couleur de fond grise */
     color: #666666;
-    /* Couleur de texte plus foncée */
     opacity: 0.5;
-    /* Rend le bouton partiellement transparent */
     cursor: not-allowed;
-    /* Change le curseur pour indiquer qu'il n'est pas cliquable */
 }
 </style>

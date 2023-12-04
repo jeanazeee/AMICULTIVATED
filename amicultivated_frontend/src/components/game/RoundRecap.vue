@@ -10,7 +10,7 @@
                 <p>Date de complétion : <span class="strong-text">{{ chosenArtInfo.year }}</span></p>
             </div>
         </div>
-        <button class="leave-room" @click="startNextRound()">Next Round</button>
+        <button class="next-round" @click="startNextRound()">Next Round</button>
     </div>
 </template>
 
@@ -77,13 +77,19 @@ const startNextRound = () => {
     border: 4px solid white;
 }
 
-.leave-room {
-    margin: auto;
+.next-round {
     margin-top: 2em;
-    width: 7em;
+    width: 30%;
+    height: 100px;
     background-color: black;
     border-radius: 5px;
-    margin-bottom: 5em;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.next-round:hover {
+    background-color: rgb(55, 40, 55);
 }
 
 .leave-room:hover {

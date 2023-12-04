@@ -2,10 +2,10 @@
     <div class="end-game-container">
         <div class="title">
             <h1>Fin de la partie, {{ store.getters.user.username }}</h1>
-            <h3>Tu es classé {{ computeRanking() }} / {{ store.getters.currentRoomInfos.players.length }} !</h3>
+            <h3>Tu es classé {{ computeRanking() }} / {{ playersLength }} !</h3>
         </div>
         <div class="profile-container">
-            <div class="player-card" v-for="player in players">
+            <div class="player-card" v-for="player in sortedPlayers">
                 <div class="player-info">
                     <p class="name">{{ player.username}} </p>
                     <p class="score">{{ player.score }}</p>
@@ -29,6 +29,10 @@ const home = () => {
 }
 
 const players = ref(store.getters.currentRoomInfos.players);
+const playersLength = ref(store.getters.currentRoomInfos.players.length);
+const sortedPlayers = ref(store.getters.currentRoomInfos.players.sort((a, b) => {
+    return b.score - a.score;
+}));
 
 const computeRanking = () => {
     let sortedPlayers = players.value.sort((a, b) => {
@@ -54,6 +58,7 @@ const computeRanking = () => {
 .profile-container {
     width: fit-content;
     display: flex;
+    flex-direction: column;
     margin: auto;
     background: rgb(17, 24, 39);
     background: radial-gradient(circle, rgba(17, 24, 39, 1) 0%, rgba(21, 31, 54, 1) 100%);

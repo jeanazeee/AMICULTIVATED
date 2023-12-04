@@ -132,9 +132,6 @@ const copyPath = () => {
     height: 80%;
 }
 
-.main .start-game {
-    height: 10%;
-}
 
 .main .start-game button {
     min-height: 50px;
@@ -159,6 +156,10 @@ const copyPath = () => {
 .settings {
     margin-top: 50px;
     font-size: 1.5rem;
+}
+
+.settings div {
+    margin-bottom: 20px;
 }
 
 .settings .max-players label {
