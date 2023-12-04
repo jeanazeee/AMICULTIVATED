@@ -11,8 +11,12 @@
                 </div>
             </div>
             <div class="art-frame">
-                <div class="img">
-                    <img :src="currentRoundInfos.image" oncontextmenu="return true;">
+                <div class="img" v-if="!isLoading()">
+                    <img :src="currentRoundInfos.image" oncontextmenu="return false;">
+                </div>
+                <div class="title" v-if="isLoading()">
+                    <h2>Chargement du prochain round</h2>
+                    <img src="./../../assets/paint_loader.gif" alt="" class="loading-gif">
                 </div>
                 <div class="response" v-if="isRoundGoing()">
                     <button class="answer-button" v-for="artAnswer in currentRoundInfos.artAnswers"
@@ -104,7 +108,6 @@ const initSocketHandlers = () => {
         store.dispatch('saveCurrentRoundInfos', { currentRoundInfos: currentRoundInfos.value })
         //scores will be updated by parent
         emit('roundEnd');
-        loading.value = false;
     });
 
 
@@ -147,6 +150,7 @@ const submitAnswer = (artAnswerId) => {
 }
 
 const startNextRound = () => {
+    loading.value = true;
     currentRoundInfos.value.hasAnswered = false;
     store.dispatch('saveCurrentRoundInfos', { currentRoundInfos: currentRoundInfos.value })
     props.socketManager.startNextRound(store.getters.currentRoomInfos.code);
@@ -172,6 +176,10 @@ const isGameFinished = () => {
     return currentRoundInfos.value.roundNumber === props.roomInfos.maxRounds;
 }
 
+
+const isLoading = () => {
+    return loading.value;
+}
 
 
 </script>
@@ -274,12 +282,17 @@ const isGameFinished = () => {
     transition: 1s;
 }
 
-.answer-button:disabled, .answer-button:disabled:hover{
+.answer-button:disabled,
+.answer-button:disabled:hover {
     margin: 0.4em;
-    background-color: #cccccc; /* Couleur de fond grise */
-    color: #666666; /* Couleur de texte plus foncée */
-    opacity: 0.5; /* Rend le bouton partiellement transparent */
-    cursor: not-allowed; /* Change le curseur pour indiquer qu'il n'est pas cliquable */
+    background-color: #cccccc;
+    /* Couleur de fond grise */
+    color: #666666;
+    /* Couleur de texte plus foncée */
+    opacity: 0.5;
+    /* Rend le bouton partiellement transparent */
+    cursor: not-allowed;
+    /* Change le curseur pour indiquer qu'il n'est pas cliquable */
 }
 
 .players {
@@ -287,4 +300,12 @@ const isGameFinished = () => {
     background-color: white;
 }
 
+
+.loading-gif{
+    height: 400px; 
+    width: 800px; 
+    margin: auto;
+    overflow: hidden;
+    object-fit: cover;
+}
 </style>
