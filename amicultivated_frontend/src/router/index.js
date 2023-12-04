@@ -88,7 +88,6 @@ const router = createRouter({
   ]
 })
 
-console.log(store.getters.currentRoomCode)
 router.beforeEach((to, from, next) => {
   if  ( (to.name == 'login' || to.name == 'signup') && store.getters.loggedIn == true) {
     next({name: 'home'}); 

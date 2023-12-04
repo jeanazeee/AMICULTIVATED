@@ -15,6 +15,7 @@ class RoundSocketManager {
     isRoundStarted = false;
     roundAnswerIndex = 1;
     roundCorrectAnswerIndex = 1;
+    chosenArtList = null;
 
     constructor(roomNamespace, roomCode) {
         this.roomNamespace = roomNamespace;
@@ -39,14 +40,14 @@ class RoundSocketManager {
             artId = "";
         }
         // Sélectionner une œuvre d'art et envoyer les détails aux joueurs de la room
-        const chosenArtList = await ArtApiService.selectArtworkForRound(difficulty, artId);
+        this.chosenArtList = await ArtApiService.selectArtworkForRound(difficulty, artId);
         //TODO 
         // Choose the correct answer, shuffle the list and send it to the players
         const questionType = this.chooseQuestionType();
-        this.roomNamespace.to(this.roomCode).emit('roundStarted', { artInfo: chosenArtList, room: this.roomCode, questionType: questionType });
+        this.roomNamespace.to(this.roomCode).emit('roundStarted', { artInfo: this.chosenArtList, room: this.roomCode, questionType: questionType });
 
         // Choisir the first art as the correct answer
-        this.currentCorrectAnswerId = chosenArtList[0].id;
+        this.currentCorrectAnswerId = this.chosenArtList[0].id;
         this.playersResponses = {};
     }
 
@@ -123,11 +124,16 @@ class RoundSocketManager {
     }
 
     handleRoundEnd(roundResults) {
+        const answerData = {
+            artist: this.chosenArtList[0].artistName,
+            title: this.chosenArtList[0].title,
+            year: this.chosenArtList[0].completitionYear,
+        }
         // Send results to players
         this.roundAnswerIndex = 1;
         this.roundCorrectAnswerIndex = 1;
         this.isRoundStarted = false;
-        this.roomNamespace.to(this.roomCode).emit('roundEnded', { roundResults: roundResults, room: this.roomCode });
+        this.roomNamespace.to(this.roomCode).emit('roundEnded', { roundResults: roundResults, room: this.roomCode, answerData: answerData });
     }
 
     endGame() {

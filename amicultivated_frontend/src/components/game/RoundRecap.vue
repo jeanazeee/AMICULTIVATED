@@ -1,0 +1,94 @@
+<template>
+    <div class="main-frame">
+        <div class="art-info">
+            <div class="img">
+                <img :src="image" oncontextmenu="return false;">
+            </div>
+            <div class="info">
+                <p>Artiste : <span class="strong-text">{{ chosenArtInfo.artist }}</span></p>
+                <p>Titre de l'oeuvre : <span class="strong-text">{{ chosenArtInfo.title }}</span></p>
+                <p>Date de complétion : <span class="strong-text">{{ chosenArtInfo.year }}</span></p>
+            </div>
+        </div>
+        <button class="leave-room" @click="startNextRound()">Next Round</button>
+    </div>
+</template>
+
+<script setup>
+
+const props = defineProps({
+    image: String,
+    chosenArtInfo: Object,
+});
+
+const emit = defineEmits(['startNextRound']);
+
+const startNextRound = () => {
+    emit('startNextRound');
+}
+
+</script>
+
+<style scoped>
+.main-frame{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.art-info {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.img{
+    width: 40%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.info { 
+    width: 50%;
+    height: 100%;
+}
+
+.info p {
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin: 0.5em;
+}
+
+.strong-text {
+    font-weight: 700;
+}
+
+.img img {
+    width: auto;
+    border: 4px solid white;
+}
+
+.leave-room {
+    margin: auto;
+    margin-top: 2em;
+    width: 7em;
+    background-color: black;
+    border-radius: 5px;
+    margin-bottom: 5em;
+}
+
+.leave-room:hover {
+    background-color: rgb(55, 40, 55);
+    color: white;
+}
+
+</style>

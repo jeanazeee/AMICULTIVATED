@@ -92,10 +92,11 @@ class API {
     }
     
 
-    async updateRoom(roomCode, maxPlayers){
+    async updateRoom(roomCode, maxPlayers, maxRounds){
         try{
             const response = await this.api.put(`room/${roomCode}`, {
-                maxPlayers: maxPlayers
+                maxPlayers: maxPlayers,
+                maxRounds: maxRounds
             });
             if(response.status === 200){
                 this.roomSocketManager.updateRoom(roomCode, maxPlayers);

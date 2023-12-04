@@ -86,7 +86,6 @@ export const store = new createStore({
     },
     actions: {
         login: ({ commit }, { user, roomCode }) => {
-            console.log(user, roomCode);
             localStorage.setItem('user', JSON.stringify(user));
             const roomData = { code: roomCode }
             localStorage.setItem('currentRoomInfos', JSON.stringify(roomData));

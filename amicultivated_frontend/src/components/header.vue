@@ -36,7 +36,10 @@
 .head {
     width: 100%;
     background-color: transparent;
-    padding: 3em;
+    padding-top: 3em;
+    padding-left: 3em;
+    padding-right: 3em;
+    padding-bottom: 1em;
     top: 0;
     display: inline-block;
     display: flex;

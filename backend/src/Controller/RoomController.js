@@ -159,7 +159,8 @@ class RoomController extends BaseController{
 
     async updateRoom(req, res){
         const {roomCode} = req.params;
-        const {maxPlayers} = req.body;
+        const {maxPlayers, maxRounds} = req.body;
+        
         if (!roomCode) {
             return res.status(400).json({ message: "Missing required fields" });
         }
@@ -169,10 +170,9 @@ class RoomController extends BaseController{
             return res.status(400).json({ message: "Room not found" });
         }
 
-        if(maxPlayers != undefined){
-            await this.roomRepository.updateMaxPlayers(roomCode, maxPlayers);
+        if(maxPlayers != undefined && maxRounds != undefined){
+            await this.roomRepository.updateSettings(roomCode, maxPlayers, maxRounds);
         }
-
         res.status(200).json({ message: "Room updated successfully"});
     }
 
