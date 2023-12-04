@@ -128,4 +128,7 @@ const computeRanking = () => {
     font-weight: 500;
 }
 
+.home:hover {
+    background-color: rgb(170, 170, 170);
+}
 </style>

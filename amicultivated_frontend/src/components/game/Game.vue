@@ -19,7 +19,6 @@
                     v-if="isRoundFinished()" />
             </div>
             <GameLoader v-if="isLoading()" />
-
         </div>
     </div>
     <div class="endgame-container" v-if="displayEndgame()">

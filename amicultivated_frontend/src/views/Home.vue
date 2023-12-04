@@ -63,7 +63,7 @@ const joinRoom = async () => {
         await api.joinRoom(roomCode.value, username)
         router.push({ name: 'room', params: { roomCode: roomCode.value } });
     } catch (error) {
-        errorMessage.value = "Erreur : " + error;
+        errorMessage.value = "Erreur : " + error.response.data.message;
     }
 }
 
@@ -72,7 +72,7 @@ const leaveRoom = async () => {
         let username = store.getters.user.username;
         await api.leaveRoom(username)
     } catch (error) {
-        errorMessage.value = "Erreur : " + error;
+        errorMessage.value = "Erreur : " + error.response.data.message;
     }
 }
 
@@ -82,7 +82,6 @@ const createRoom = async () => {
         room.value = await api.createRoom(username);
         router.push({ name: 'room', params: { roomCode: room.value.code } });
     } catch (error) {
-        console.error(error);
         errorMessage.value = "Erreur : " + error.response.data.message;
     }
 }
