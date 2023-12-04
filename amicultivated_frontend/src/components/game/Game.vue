@@ -1,6 +1,6 @@
 <template>
     <div class="main-frame">
-        <div class="title">
+        <div class="title" v-if="!isLoading()">
             <h2>Trouvez la réponse correct pour l'attribut : {{ questionTypeMapAttributes[currentRoundInfos.questionType] }}
             </h2>
         </div>
@@ -10,11 +10,11 @@
                 <div class="players">
                     <h2>Joueurs</h2>
                     <div class="player-card" v-for="player in props.roomInfos.players" :key="player.id">
-                        {{ player }}
+                        {{ player.username }} : {{ player.score }}
                     </div>
                 </div>
                 <div class="leave-room">
-                    <button class="full-button" @click="leaveRoom()" >Quitter la Room</button>
+                    <button class="full-button" @click="leaveGame()" >Quitter la Room</button>
                 </div>
             </div>
             <div class="art-frame">
@@ -36,30 +36,11 @@
 
                 <div class="roundOff-container" v-if="isRoundFinished()">
                     <div class="has-next-round" v-if="hasNextRound()">
-                        <div class="title">
-                            <h2>Score Round</h2>
-                        </div>
-                        <div v-for="result in currentRoundInfos.roundResults">
-                            {{ result.username }} : {{ result.score }}
-                        </div>
                         <button class="leave-room" @click="startNextRound()">Next Round</button>
-                    </div>
-                    <div class="game-ended" v-if="isGameFinished()">
-                        <div class="title">
-                            <h2>Score Finale</h2>
-                        </div>
-                        <div v-for="player in store.getters.currentRoomInfos.players">
-                            {{ player.username }} : {{ player.score }}
-                        </div>
-                        <button class="leave-room" @click="endGame()">End Game</button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="leave-room">
-        <button class="full-button" @click="leaveGame()">Quitter la Room</button>
     </div>
 </template>
 
@@ -67,6 +48,7 @@
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { onMounted, ref } from 'vue';
+import Endgame from './Endgame.vue';
 
 const loading = ref(false);
 const props = defineProps({
@@ -330,31 +312,12 @@ const isLoading = () => {
     font-weight: 600;
     font-size: x-large;
     padding: 0.2em;
-}
-
-.next {
     display: flex;
     justify-content: center;
+    align-items: center;
+    margin: 0.2em;
+    border-radius: 1em;
 }
-
-.next {
-    display: flex;
-    justify-content: center;
-}
-
-.players h2 {
-    background-color: grey;
-    text-align: center;
-    color:white;
-}
-
-.player-card{
-    color: black;
-    font-weight: 600;
-    font-size: x-large;
-    padding: 0.2em;
-}
-
 
 .loading-gif{
     height: 400px; 
