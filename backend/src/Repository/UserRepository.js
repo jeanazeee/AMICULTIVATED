@@ -32,8 +32,17 @@ class UserRepository {
         return this.model.findAll({ where: { currentRoomId: roomId } });
     }
 
+    addScoreById = (userId, score) => {
+        return this.model.increment('score', { by: score, where: { id: userId } });
+    }
 
+    resetScoreById = (userId) => {
+        return this.model.update({ score: 0 }, { where: { id: userId } });
+    }
 
+    resetScoreByRoomId = (roomId) => {
+        return this.model.update({ score: 0 }, { where: { currentRoomId: roomId } });
+    }
 }
 
 export default UserRepository;

@@ -8,6 +8,7 @@ import API from "./src/API/API.js";
 import DefaultController from "./src/Controller/DefaultController.js";
 import AuthController from "./src/Controller/AuthController.js";
 import RoomController from "./src/Controller/RoomController.js";
+import ArtController from "./src/Controller/ArtController.js";
 
 import SocketManager from "./src/sockets/SocketManager.js";
 
@@ -42,6 +43,7 @@ const initController = (app) => {
     new DefaultController(app);
     new AuthController(app);
     new RoomController(app);
+    new ArtController(app);
 }
 
 init();
