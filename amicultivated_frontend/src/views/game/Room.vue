@@ -33,6 +33,7 @@ onUnmounted(() => {
 
 const getNewRoomInfo = async () => {
     roomInfo.value = (await api.getRoomInfos(roomCode.value)).room;
+    store.dispatch('saveCurrentRoomInfos', { currentRoomInfos: roomInfo.value })
 }
 const sendUpdateRoom = async (newInfos) => {
     try {

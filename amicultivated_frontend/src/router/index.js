@@ -60,7 +60,7 @@ const router = createRouter({
         // check room status
         const roomInfos = (await api.getRoomInfos(to.params.roomCode)).room;
         if (roomInfos.status === 'Open') {
-
+          store.dispatch('saveCurrentRoomInfos', { currentRoomInfos: roomInfos })
           if (currentRoom && currentRoom == to.params.roomCode) {
             next();
           } else {
