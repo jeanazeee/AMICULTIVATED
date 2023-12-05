@@ -21,7 +21,6 @@ class API {
 
         API.instance = this;
     }
-
 }
 
 export default API;

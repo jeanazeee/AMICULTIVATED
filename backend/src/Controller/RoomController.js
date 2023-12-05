@@ -2,6 +2,7 @@ import BaseController from "./BaseController.js";
 import RoomRepository from "../Repository/RoomRepository.js";
 import UserRepository from "../Repository/UserRepository.js";
 import Route from "../Route/Route.js";
+import AuthMiddleware from "../Middlewares/AuthMiddleware.js";
 
 class RoomController extends BaseController{
 
@@ -12,14 +13,14 @@ class RoomController extends BaseController{
 
     defineRoutes() {
         return [
-            new Route(RoomController.prefix + "/create", "post", this.create.bind(this)),
-            new Route(RoomController.prefix + "/join", "post", this.join.bind(this)),
-            new Route(RoomController.prefix + "/leave", "post", this.leave.bind(this)),
-            new Route(RoomController.prefix + "/:roomCode", "get", this.getRoomByCode.bind(this)),
-            new Route(RoomController.prefix + "/:roomCode", "put", this.updateRoom.bind(this)),
-            new Route(RoomController.prefix + "/:roomCode/start", "post", this.startGame.bind(this)),
-            new Route(RoomController.prefix + "/:roomCode/end", "post", this.endGame.bind(this)),
-            new Route(RoomController.prefix + "/:roomCode/scores", "get", this.getScoresByRoom.bind(this)),
+            new Route(RoomController.prefix + "/create", "post", this.create.bind(this), AuthMiddleware.verifyUserFromBody),
+            new Route(RoomController.prefix + "/join", "post", this.join.bind(this), AuthMiddleware.verifyUserFromBody),
+            new Route(RoomController.prefix + "/leave", "post", this.leave.bind(this), AuthMiddleware.verifyUserFromBody),
+            new Route(RoomController.prefix + "/:roomCode", "get", this.getRoomByCode.bind(this), AuthMiddleware.verifyToken),
+            new Route(RoomController.prefix + "/:roomCode", "put", this.updateRoom.bind(this), AuthMiddleware.verifyToken),
+            new Route(RoomController.prefix + "/:roomCode/start", "post", this.startGame.bind(this), AuthMiddleware.verifyToken),
+            new Route(RoomController.prefix + "/:roomCode/end", "post", this.endGame.bind(this), AuthMiddleware.verifyToken),
+            new Route(RoomController.prefix + "/:roomCode/scores", "get", this.getScoresByRoom.bind(this), AuthMiddleware.verifyToken),
         ];
     }
     
