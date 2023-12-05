@@ -88,7 +88,7 @@ class RoomSocketManager {
     }
 
     onRoundLoading(callback){
-        this.socket.on('roundStartingRequest', callback);
+        this.socket.on('roundLoading', callback);
     }
 
     onRoundEnded(callback){
@@ -128,7 +128,7 @@ class RoomSocketManager {
     }
 
     offRoundLoading(callback){
-        this.socket.off('roundStartingRequest', callback);
+        this.socket.off('roundLoading', callback);
     }
 }
 

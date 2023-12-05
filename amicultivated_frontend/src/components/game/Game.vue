@@ -22,7 +22,7 @@
         </div>
     </div>
     <div class="endgame-container" v-if="displayEndgame()">
-        <Endgame @home="leaveGame()"/>
+        <Endgame @quitGame="leaveGame()"/>
     </div>
 </template>
 
@@ -64,6 +64,7 @@ onMounted(() => {
 const initSocketHandlers = () => {
 
     props.socketManager.onRoundLoading( () => {
+        console.log("round loading");
         loading.value = true;
     });
 

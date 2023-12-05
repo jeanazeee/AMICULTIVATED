@@ -13,7 +13,7 @@
             </div>
         </div>
         <div class="home" >
-            <button @click="home()">Quitter la partie</button>
+            <button @click="quitGame()">Quitter la partie</button>
         </div>
     </div>
 </template>
@@ -22,10 +22,10 @@
 import { ref } from 'vue';
 import {store} from './../../store/store.js'
 
-const emits = defineEmits(['home']);
+const emits = defineEmits(['quitGame']);
 
-const home = () => {
-    emits('home');
+const quitGame = () => {
+    emits('quitGame');
 }
 
 const players = ref(store.getters.currentRoomInfos.players);

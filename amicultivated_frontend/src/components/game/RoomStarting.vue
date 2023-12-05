@@ -13,7 +13,7 @@
                     <div class="max-players">
                         <label for="playerRange">Nombre de joueurs max</label>
                         <div class="slider">
-                            <input type="range" name="playerRange" id="" v-model="props.roomInfos.maxPlayers" max="12" min="1"
+                            <input type="range" name="playerRange" id="" v-model="props.roomInfos.maxPlayers" max="12" :min="props.roomInfos.players.length"
                                 @change="sliderChange()">
                             {{ props.roomInfos.maxPlayers }}
                         </div>

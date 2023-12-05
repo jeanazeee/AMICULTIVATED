@@ -30,6 +30,7 @@ class RoundSocketManager {
             return;
         }
 
+        console.log("Starting round");
         this.roomNamespace.to(this.roomCode).emit('roundLoading', { room: this.roomCode });
 
         this.isRoundStarted = true;
@@ -41,44 +42,47 @@ class RoundSocketManager {
         if (artId == null) {
             artId = "";
         }
-        // Sélectionner une œuvre d'art et envoyer les détails aux joueurs de la room
+        // Select a list of artworks
         this.chosenArtList = await ArtApiService.selectArtworkForRound(difficulty, artId);
         // Choose the correct answer, shuffle the list and send it to the players
         const questionType = this.chooseQuestionType();
         this.roomNamespace.to(this.roomCode).emit('roundStarted', { artInfo: this.chosenArtList, room: this.roomCode, questionType: questionType });
 
-        // Choisir the first art as the correct answer
+        // Choose the first art as the correct answer
         this.currentCorrectAnswerId = this.chosenArtList[0].id;
         this.playersResponses = {};
     }
 
     async handlePlayerResponse(user, answerId) {
-        // Enregistrer la réponse du joueur
+        // Register the player's response
         const username = user.username;
         this.playersResponses[user.userId] = {
             username,
             answerId,
             index: this.roundAnswerIndex++
         };
-        // Vérifier si toutes les réponses sont reçues
+        // Check if all players have answered
         if ((await this.areAllAnswersReceived())) {
-            // Évaluer les réponses et envoyer les résultats
+            // Evaluate the answers and send the results
             this.evaluateAndSendResults();
         }
     }
 
     async areAllAnswersReceived() {
-        // Récupérer le nombre actuel de joueurs dans la room
+        // Retrieve the number of players in the room
         const currentPlayerCount = await this.getCurrentPlayerCount();
 
-        // Vérifier si le nombre de réponses reçues correspond au nombre de joueurs
+        // Check if the number of responses is equal to the number of players
         return Object.keys(this.playersResponses).length === currentPlayerCount;
     }
 
     async getCurrentPlayerCount() {
-        // Récupérer la liste des joueurs dans la room
+        if(await this.roomRepository.doesRoomExist(this.roomCode) === false){
+            return 0;
+        }
+
+        // Retrieve the room
         const room = await this.roomRepository.getRoomByCode(this.roomCode);
-        // Récupérer le nombre de joueurs dans la room
         return room.currentPlayerNumber;
     }
 
@@ -87,28 +91,32 @@ class RoundSocketManager {
             return;
         }
 
-        // Supprimer la réponse du joueur si nécessaire
+        // Delete the player's response
         if (this.playersResponses[user.userId]) {
             delete this.playersResponses[user.userId];
         }
 
-        // Vérifiez si vous devez réévaluer l'état du jeu
-        if (await this.areAllAnswersReceived()) {
-            this.evaluateAndSendResults();
+        // Reevaluate if all players have answered
+        try {
+            if (await this.areAllAnswersReceived()) {
+                this.evaluateAndSendResults();
+            }
+        } catch (e) {
+            console.log(e);
         }
     }
 
 
     async evaluateAndSendResults() {
         const roundResults = {};
-        // Récupérer la liste des joueurs dans la room
-        // Envoyer les résultats aux joueurs
         const userIds = Object.keys(this.playersResponses);
 
-        userIds.sort((a, b) => {
+        //sort userIds by response index
+        userIds.sort((a, b) => {    
             return this.playersResponses[a].index - this.playersResponses[b].index;
         });
 
+        // Check if the answers are correct and compute the score
         for (let i = 0; i < userIds.length; i++) {
             const userId = userIds[i];
             const username = this.playersResponses[userId].username;
@@ -125,13 +133,17 @@ class RoundSocketManager {
     }
 
     handleRoundEnd(roundResults) {
-        let answerData = {}
-        if (!!this.chosenArtList[0]) {
-            answerData = {
-                artist: this.chosenArtList[0].artistName,
-                title: this.chosenArtList[0].title,
-                year: this.chosenArtList[0].completitionYear,
+        let answerData = {};
+        try {
+            if (this.chosenArtList && this.chosenArtList.length > 0) {
+                answerData = {
+                    artist: this.chosenArtList[0].artistName,
+                    title: this.chosenArtList[0].title,
+                    year: this.chosenArtList[0].completitionYear,
+                }
             }
+        } catch (e) {
+            answerData = {}
         }
         // Send results to players
         this.roundAnswerIndex = 1;
@@ -149,17 +161,16 @@ class RoundSocketManager {
     async computeScore(index) {
         const playerCount = await this.getCurrentPlayerCount();
 
-        // Définir le score maximum et le score minimum
+        // Define the maximum and minimum score
         const maxScore = 100;
         const minScore = 10;
 
-        // Ajuster la décroissance du score en fonction du nombre de joueurs
+        // Ajust the decay factor according to the number of players
         const decayFactor = 0.5 * (playerCount / 10);
 
-        // Calculer un score qui diminue de manière exponentielle
+        // Compute the score
         const score = Math.max(minScore, maxScore * Math.exp(-decayFactor * (index - 1)));
 
-        console.log(index, decayFactor)
 
         this.roundCorrectAnswerIndex++;
         return Math.round(score);

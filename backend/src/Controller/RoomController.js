@@ -138,6 +138,12 @@ class RoomController extends BaseController{
         // user currentRoomId to null
         await this.userRepository.removeRoomFromUser(username);
 
+        // if he was the last player in the room, delete the room
+        room = await this.roomRepository.getRoomById(roomId);
+        if(room.currentPlayerNumber == 0){
+            await this.roomRepository.deleteRoom(roomId);
+        }
+
         res.status(200).json({ message: "Left room successfully", code: room.code});
     }
 
