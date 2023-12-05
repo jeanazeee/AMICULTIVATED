@@ -137,7 +137,6 @@ const createRoom = async () => {
 }
 .main-div {
   width: 60%;
-  height: 400px;
   object-fit: cover;
   display: flex;
   margin:auto;
@@ -211,6 +210,10 @@ h2 {
   font-weight: bold;
   text-transform: uppercase;
   padding-right:1em;
+}
+
+.main-create {
+  padding-bottom: 2em;
 }
 
 .main-create h2 {

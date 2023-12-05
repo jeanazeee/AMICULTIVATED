@@ -69,7 +69,7 @@ class RoomRepository {
 
     async isRoomClosed(roomCode) {
         let room = await this.getRoomByCode(roomCode);
-        return room.status === "Finished" || room.status === "Stared";
+        return room.status === "Finished" || room.status === "Started";
     }
 
     async isRoomJoinable(roomCode) {

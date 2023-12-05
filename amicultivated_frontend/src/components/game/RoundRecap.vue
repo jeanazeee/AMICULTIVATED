@@ -101,6 +101,7 @@ const endGamePage = () => {
     color: white;
     font-size: 1.5rem;
     font-weight: 700;
+    margin-bottom: 2em;
 }
 
 .next-round:hover {

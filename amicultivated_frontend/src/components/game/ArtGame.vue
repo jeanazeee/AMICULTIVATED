@@ -75,6 +75,7 @@ const submitAnswer = (artAnswerId) => {
     grid-template-columns: auto auto;
     grid-template-rows: auto auto;
     gap: 10px;
+    padding-bottom: 2em;
 }
 .answer-button-container {
     margin: 1%;
