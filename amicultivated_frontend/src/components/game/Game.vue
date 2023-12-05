@@ -13,9 +13,9 @@
         </div>
         <div class="main-container">
             <div class="not-loading" v-if="!isLoading()">
-                <ArtGame :currentRoundInfos="currentRoundInfos" @submitAnswer="submitAnswerHandler"
+                <ArtGame @submitAnswer="submitAnswerHandler"
                     v-if="isRoundGoing()" />
-                <RoundRecap :image="currentRoundInfos.image" :chosenArtInfo="chosenArtInfo"  @startNextRound="startNextRoundHandler"
+                <RoundRecap @startNextRound="startNextRoundHandler"
                     v-if="isRoundFinished()" />
             </div>
             <GameLoader v-if="isLoading()" />
@@ -49,7 +49,6 @@ const currentRoundInfos = ref({
     questionType: "",
     hasAnswered: false
 });
-const chosenArtInfo = ref({});
 
 
 const emit = defineEmits(['leaveGame', 'endGame', 'roundEnd']);
@@ -58,18 +57,16 @@ const emit = defineEmits(['leaveGame', 'endGame', 'roundEnd']);
 onMounted(() => {
     initSocketHandlers();
     currentRoundInfos.value = store.getters.currentRoundInfos;
-    loading.value = !isRoundGoing();
+    loading.value = (!isRoundGoing() && !isRoundFinished());
 });
 
 const initSocketHandlers = () => {
 
     props.socketManager.onRoundLoading( () => {
-        console.log("round loading");
         loading.value = true;
     });
 
     props.socketManager.onRoundStarted((data) => {
-        
         formatRoundInfos(data.artInfo);
         currentRoundInfos.value.roundStatus = "Going"
         currentRoundInfos.value.roundNumber++;
@@ -82,7 +79,7 @@ const initSocketHandlers = () => {
     props.socketManager.onRoundEnded((data) => {
         currentRoundInfos.value.roundStatus = "Finished"
         currentRoundInfos.value.roundResults = data.roundResults;
-        chosenArtInfo.value = data.answerData;
+        store.dispatch('saveChosenArtInfo', { chosenArtInfo: data.answerData })
         //add from currentRoundInfos and roundResults
         store.dispatch('saveCurrentRoundInfos', { currentRoundInfos: currentRoundInfos.value })
         //scores will be updated by parent

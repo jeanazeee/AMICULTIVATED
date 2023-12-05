@@ -23,6 +23,10 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
+import { useStore } from 'vuex';
+
+const store = useStore();
 
 const questionTypeMapAttributes = {
     "title": "Titre de l'oeuvre",
@@ -30,9 +34,7 @@ const questionTypeMapAttributes = {
     "year": "Date de création"
 }
 
-const props = defineProps({
-    currentRoundInfos : Object,
-});
+const currentRoundInfos = ref(store.getters.currentRoundInfos);
 
 const emit = defineEmits(['submitAnswer']);
 

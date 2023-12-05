@@ -15,10 +15,17 @@
 </template>
 
 <script setup>
+import { onMounted, ref } from 'vue';
+import { useStore } from 'vuex';
 
-const props = defineProps({
-    image: String,
-    chosenArtInfo: Object,
+const store = useStore();
+
+const image = ref("");
+const chosenArtInfo = ref(store.getters.chosenArtInfo);
+
+onMounted(() => {
+    image.value = store.getters.currentRoundInfos.image;
+    chosenArtInfo.value = store.getters.chosenArtInfo;
 });
 
 const emit = defineEmits(['startNextRound']);

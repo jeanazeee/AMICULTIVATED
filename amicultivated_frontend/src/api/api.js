@@ -47,6 +47,7 @@ class API {
                 this.store.dispatch('deleteRoomInfos'); 
             }
         }catch(error){
+            this.store.dispatch('deleteRoomInfos'); 
             console.error('Error leaving room:', error);
             throw error;
         }
