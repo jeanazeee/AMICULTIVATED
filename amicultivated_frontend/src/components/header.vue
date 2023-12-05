@@ -53,6 +53,7 @@
 .items {
     display: inline-block;
     display: flex;
+    align-items: center;
     width: 100%;
     position: right;
 }
