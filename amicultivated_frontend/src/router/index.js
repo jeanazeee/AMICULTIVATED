@@ -39,7 +39,7 @@ const router = createRouter({
     {
       path: '/profil',
       name:'profil',
-      component: Profil
+      component: Comming
     },
     {
       path: '/leaderboard',

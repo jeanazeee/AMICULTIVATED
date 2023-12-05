@@ -1,6 +1,6 @@
 <template>
     <div class="title">
-        <h1>Bonjour {{ store.getters.username  }}</h1>
+        <h1>Bonjour, {{ store.getters.user.username  }}</h1>
     </div>
     <div class="profile-container">
         
@@ -18,10 +18,10 @@ import {store} from './../../store/store.js'
 <style  scoped>
 .profile-container {
     width: 580px;
-    height: 580px;
+    height: 10em;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    margin: auto;
+    margin-top: 2em;
     background: rgb(17, 24, 39);
     background: radial-gradient(circle, rgba(17, 24, 39, 1) 0%, rgba(21, 31, 54, 1) 100%);
     border-radius: 0.75rem;
