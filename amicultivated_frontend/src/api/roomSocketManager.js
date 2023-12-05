@@ -30,10 +30,9 @@ class RoomSocketManager {
         });
     }
 
-    updateRoom(roomCode, maxPlayers) {
+    updateRoom(roomCode) {
         this.socket.emit('updateRoom', {
-            roomCode: roomCode,
-            maxPlayers: maxPlayers
+            roomCode: roomCode
         });
     }
 

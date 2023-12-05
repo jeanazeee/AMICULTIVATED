@@ -18,9 +18,7 @@ class SocketManager {
     }
 
     setupHandlers() {
-        // Initialize and set up all your Socket.IO handlers here
         new RoomSocketHandler(this.io);
-        // You can add more handlers for different features or namespaces
     }
 }
 

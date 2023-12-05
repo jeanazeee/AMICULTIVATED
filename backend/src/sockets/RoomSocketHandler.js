@@ -2,7 +2,6 @@ import Logger from "../Logger/Logger.js";
 import RoomRepository from "../Repository/RoomRepository.js";
 import UserRepository from "../Repository/UserRepository.js";
 import RoundSocketManager from "./RoundSocketManager.js";
-import ArtApiService from "../Services/ArtApiService.js";
 
 class RoomSocketHandler {
 
@@ -25,35 +24,36 @@ class RoomSocketHandler {
             socket.on("joinRoom", ({ roomCode, user }) => {
                 socket.join(roomCode);
                 roomNamespace.to(roomCode).emit('userJoined', { user: user.username, room: roomCode });
-                Logger.info(`Utilisateur ${user.username} a rejoint la room: ${roomCode}`);
+                Logger.info(`User ${user.username} joined the room: ${roomCode}`);
                 if (!this.roundManagers[roomCode]) {
                     this.roundManagers[roomCode] = new RoundSocketManager(roomNamespace, roomCode);
                 }
-                this.attachRoomEventListeners(socket, roomCode, user); // Attacher les écouteurs d'événements spécifiques à la room
+                // attach room event listeners
+                this.attachRoomEventListeners(socket, user); 
 
                 socket.on("disconnect", () => {
-                    Logger.info(`Utilisateur ${user.username} a déconnecté de la room: ${roomCode}`);
+                    Logger.info(`User ${user.username} has disconnected from the room: ${roomCode}`);
 
                     this.handleLeaveRoom(socket, roomCode, user);
                 });
             });
 
             socket.on("leaveRoom", ({ roomCode, user }) => {
-                Logger.info(`Utilisateur ${user.username} a quitté la room: ${roomCode}`);
+                Logger.info(`User ${user.username} left the room: ${roomCode}`);
                 this.handleLeaveRoom(socket, roomCode, user);
             });
         });
     }
 
-    attachRoomEventListeners(socket, roomCode, user) {
+    attachRoomEventListeners(socket, user) {
         const roomNamespace = this.io.of("/room");
-        socket.on("updateRoom", async ({ roomCode, maxPlayers }) => {
-            Logger.info(`Utilisateur ${user.username} a changé les paramètres de la room: ${roomCode}`);
+        socket.on("updateRoom", async ({ roomCode }) => {
+            Logger.info(`User ${user.username} has changed the settings of the the room: ${roomCode}`);
             roomNamespace.to(roomCode).emit('updateRoom', { room: roomCode });
         });
 
         socket.on("startGame", async ({ roomCode, difficulty, artId }) => {
-            Logger.info(`Utilisateur ${user.username} a lancé la partie de la room: ${roomCode}`);
+            Logger.info(`User ${user.username} started the game for room: ${roomCode}`);
             const roundSocketManager = this.roundManagers[roomCode];
             roomNamespace.to(roomCode).emit('gameStarting', { room: roomCode });
             if (roundSocketManager) {
@@ -62,7 +62,7 @@ class RoomSocketHandler {
         });
 
         socket.on("nextRound", async ({ roomCode, difficulty, artId }) => {
-            Logger.info(`Utilisateur ${user.username} a lancé un nouveau round dans la room: ${roomCode}`);
+            Logger.info(`User ${user.username} started a new round for room: ${roomCode}`);
             const roundSocketManager = this.roundManagers[roomCode];
             if (roundSocketManager) {
                 roundSocketManager.startRound(difficulty, artId);
@@ -70,13 +70,13 @@ class RoomSocketHandler {
         });
 
         socket.on("submitAnswer", async ({ roomCode, user, answerId }) => {
-            Logger.info(`Utilisateur ${user.username} a répondu dans la room: ${roomCode} avec la réponse: ${answerId}`);
+            Logger.info(`User ${user.username} answered in room: ${roomCode} with answer: ${answerId}`);
             const roundSocketManager = this.roundManagers[roomCode];
             roundSocketManager.handlePlayerResponse(user, answerId);
         });
 
         socket.on("endGame", async ({ roomCode }) => {
-            Logger.info(`Utilisateur ${user.username} a terminé la partie dans la room: ${roomCode}`);
+            Logger.info(`User ${user.username} ended game in room: ${roomCode}`);
             const roundSocketManager = this.roundManagers[roomCode];
             if (roundSocketManager) {
                 roundSocketManager.endGame();

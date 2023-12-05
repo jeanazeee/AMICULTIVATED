@@ -21,7 +21,6 @@ class AuthAPI {
                 password,
             });
 
-
             if (response.status !== 200) {
                 throw new Error('Error logging in');
             }

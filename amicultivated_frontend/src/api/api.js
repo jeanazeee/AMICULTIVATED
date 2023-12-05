@@ -9,6 +9,8 @@ class API {
     api = null;
     roomSocketManager = null;
     store = null;
+    headers = null
+    
 
     constructor(store) {
         this.api = axios.create({
@@ -17,6 +19,9 @@ class API {
         });
         this.roomSocketManager = RoomSocketManager.getInstance();
         this.store = store;
+        this.headers = {
+            'x-access-token': this.store.getters.user.token
+        };
     }
 
     async joinRoom(roomCode, username) {
@@ -24,7 +29,8 @@ class API {
             const response = await this.api.post('room/join', {
                 roomCode: roomCode,
                 username: username
-            });
+            }, {headers: this.headers});
+            
             if(response.status === 200){
                 let roomData = response.data.room;
                 this.store.dispatch('saveCurrentRoomInfos', { currentRoomInfos: roomData })
@@ -40,7 +46,7 @@ class API {
         try{
             const response = await this.api.post('room/leave', {
                 username: username
-            });
+            }, {headers: this.headers});
             if(response.status === 200){
                 let roomCode = response.data.code;
                 this.roomSocketManager.leaveRoom(roomCode, this.store.getters.user);
@@ -61,7 +67,7 @@ class API {
                 maxRounds: 2,
             };
     
-            const response = await this.api.post('room/create', body);
+            const response = await this.api.post('room/create', body, {headers: this.headers});
             if(response.status === 201){
                 let roomData = response.data.room;
                 this.store.dispatch('saveCurrentRoomInfos', { currentRoomInfos: roomData })
@@ -79,7 +85,7 @@ class API {
 
     async getRoomInfos(roomCode) {
         try {
-            const response = await this.api.get(`room/${roomCode}`);
+            const response = await this.api.get(`room/${roomCode}`, {headers: this.headers});
             if(response.status === 200){
                 return response.data;
             }else{
@@ -97,9 +103,9 @@ class API {
             const response = await this.api.put(`room/${roomCode}`, {
                 maxPlayers: maxPlayers,
                 maxRounds: maxRounds
-            });
+            }, {headers: this.headers});
             if(response.status === 200){
-                this.roomSocketManager.updateRoom(roomCode, maxPlayers);
+                this.roomSocketManager.updateRoom(roomCode);
                 return response.data;
             }else{
                 throw response;
@@ -112,7 +118,7 @@ class API {
 
     async startGame(roomCode){
         try{
-            const response = await this.api.post(`room/${roomCode}/start`);
+            const response = await this.api.post(`room/${roomCode}/start`, {}, {headers: this.headers});
             if(response.status === 200){
                 this.roomSocketManager.startGame(roomCode);
                 this.store.dispatch('changeRoomStatus', { status: response.data.status });
@@ -128,7 +134,7 @@ class API {
 
     async endGame(roomCode){
         try {
-            const response = await this.api.post(`room/${roomCode}/end`);
+            const response = await this.api.post(`room/${roomCode}/end`, {}, {headers: this.headers});
             if(response.status === 200){
                 this.roomSocketManager.endGame(roomCode);
                 this.store.dispatch('changeRoomStatus', { status: response.data.status });
@@ -144,7 +150,7 @@ class API {
 
     async getScoresByRoom(roomCode){
         try {
-            const response = await this.api.get(`room/${roomCode}/scores`);
+            const response = await this.api.get(`room/${roomCode}/scores`, {headers: this.headers});
             if(response.status === 200){
                 const scores = response.data.scores;
                 const currentRoomInfos = this.store.getters.currentRoomInfos;
