@@ -10,7 +10,8 @@
                 <p>Date de complétion : <span class="strong-text">{{ chosenArtInfo.year }}</span></p>
             </div>
         </div>
-        <button class="next-round" @click="startNextRound()">Next Round</button>
+        <button v-if="!endGame" class="next-round" @click="startNextRound()">Next Round</button>
+        <button v-if="endGame" class="next-round" @click="endGamePage()">End game results</button>
     </div>
 </template>
 
@@ -27,11 +28,18 @@ onMounted(() => {
     image.value = store.getters.currentRoundInfos.image;
     chosenArtInfo.value = store.getters.chosenArtInfo;
 });
+const props = defineProps({
+    endGame: Boolean,
+});
 
-const emit = defineEmits(['startNextRound']);
+const emit = defineEmits(['startNextRound', 'endGamePage']);
 
 const startNextRound = () => {
     emit('startNextRound');
+}
+
+const endGamePage = () => {
+    emit('endGamePage');
 }
 
 </script>

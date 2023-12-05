@@ -15,13 +15,13 @@
             <div class="not-loading" v-if="!isLoading()">
                 <ArtGame @submitAnswer="submitAnswerHandler"
                     v-if="isRoundGoing()" />
-                <RoundRecap @startNextRound="startNextRoundHandler"
+                <RoundRecap :endGame="displayEndgame()" @endGamePage="endGamePage" @startNextRound="startNextRoundHandler"
                     v-if="isRoundFinished()" />
             </div>
             <GameLoader v-if="isLoading()" />
         </div>
     </div>
-    <div class="endgame-container" v-if="displayEndgame()">
+    <div class="endgame-container" v-if="isEndGame">
         <Endgame @quitGame="leaveGame()"/>
     </div>
 </template>
@@ -49,7 +49,7 @@ const currentRoundInfos = ref({
     questionType: "",
     hasAnswered: false
 });
-
+const isEndGame = ref(false);
 
 const emit = defineEmits(['leaveGame', 'endGame', 'roundEnd']);
 
@@ -145,7 +145,7 @@ const isGameFinished = () => {
 }
 
 const displayGame = () => {
-    return !isGameFinished() || !isRoundFinished();
+    return !isEndGame.value;
 }
 
 const displayEndgame = () => {
@@ -156,7 +156,11 @@ const isLoading = () => {
     return loading.value;
 }
 
+const endGamePage = () => {
+    isEndGame.value = true;
+}
 
+console.log(displayGame() && !isEndGame.value)
 </script>
 
 <style scoped>
