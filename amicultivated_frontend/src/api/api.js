@@ -81,7 +81,6 @@ class API {
         try {
             const response = await this.api.get(`room/${roomCode}`);
             if(response.status === 200){
-                this.store.dispatch('saveCurrentRoomInfos', { currentRoomInfos: response.data.room })
                 return response.data;
             }else{
                 throw response;
