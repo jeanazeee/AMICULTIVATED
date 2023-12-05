@@ -1,7 +1,7 @@
 <template >
     <div class="head" v-if="store.getters.loggedIn">
         <div class="icon">
-            <a href="/"><img src="../assets/logo.svg">  </a>
+            <a href="/"><img src="../assets/AMICULTIVATED.svg">  </a>
         </div>
         <div class="items">
             <ul>
@@ -46,8 +46,7 @@
 }
 
 .icon {
-    width: 2em;
-    height: 2em;
+    width: 6em;
     position: right;
 }
 
