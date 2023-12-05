@@ -76,7 +76,6 @@ li:hover {
 
 .logout button:hover {
     font-weight: bold;
-    margin-left: 2em;
     color: white;
 }
 
