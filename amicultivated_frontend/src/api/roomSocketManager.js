@@ -6,7 +6,7 @@ class RoomSocketManager {
     socket = null;
 
     constructor() {
-        this.socket = io('http://localhost:3000/room');
+        this.socket = io('http://192.168.215.241:3000/room');
     }
 
     static getInstance() {

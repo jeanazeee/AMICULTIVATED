@@ -8,7 +8,7 @@ class AuthAPI {
 
     constructor(store) {
         this.api = axios.create({
-            baseURL: 'http://localhost:3000/',
+            baseURL: 'http://192.168.215.241:3000/',
             timeout: 1000,
         });
         this.store = store;
