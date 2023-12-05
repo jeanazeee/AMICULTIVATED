@@ -24,10 +24,7 @@
       </div>
     </div>
   </div>
-    <div class="leave-room" v-if="hasCurrentRoom()">
-      <button class="full-button" @click="leaveRoom()">Quitter la Room</button>
-      <p id="room-code">Votre code de Room est : {{ store.getters.currentRoomInfos.code }}</p>
-    </div>
+  <AlreadyInGame v-if="hasCurrentRoom()" @leaveRoom="leaveRoom" @joinRoom="joinRoom"/>
   </main>
 </template>
 
@@ -37,6 +34,7 @@ import { ref } from 'vue'
 import API from './../api/api.js'
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import AlreadyInGame from '../components/game/AlreadyInGame.vue';
 
 
 
@@ -46,6 +44,7 @@ const store = useStore();
 const api = new API(store);
 const errorMessage = ref('')
 const router = useRouter();
+
 
 
 const hasCurrentRoom = () => {
@@ -63,7 +62,7 @@ const joinRoom = async () => {
         await api.joinRoom(roomCode.value, username)
         router.push({ name: 'room', params: { roomCode: roomCode.value } });
     } catch (error) {
-        errorMessage.value = "Erreur : " + error;
+        errorMessage.value = "Erreur : " + error.response.data.message;
     }
 }
 
@@ -72,7 +71,7 @@ const leaveRoom = async () => {
         let username = store.getters.user.username;
         await api.leaveRoom(username)
     } catch (error) {
-        errorMessage.value = "Erreur : " + error;
+        errorMessage.value = "Erreur : " + error.response.data.message;
     }
 }
 
@@ -82,7 +81,6 @@ const createRoom = async () => {
         room.value = await api.createRoom(username);
         router.push({ name: 'room', params: { roomCode: room.value.code } });
     } catch (error) {
-        console.error(error);
         errorMessage.value = "Erreur : " + error.response.data.message;
     }
 }

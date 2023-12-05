@@ -30,7 +30,12 @@ export const store = new createStore({
             currentRoundNumber: 0,
             currentRoundStatus: '',
             currentRoundResults: {},
-        }
+        },
+        chosenArtInfo: JSON.parse(localStorage.getItem('chosenArtInfo')) || {
+            artist: '',
+            title: '',
+            year: '',
+        },
     },
     mutations: {
         login(state, { username, token, userId, currentRoomCode }) {
@@ -82,11 +87,20 @@ export const store = new createStore({
         },
         changeRoomStatus(state, status) {
             state.currentRoomInfos.status = status;
+        },
+        saveChosenArtInfo(state, chosenArtInfo) {
+            state.chosenArtInfo = chosenArtInfo;
+        },
+        deleteChosenArtInfo(state) {
+            state.chosenArtInfo = {
+                artist: '',
+                title: '',
+                year: '',
+            };
         }
     },
     actions: {
         login: ({ commit }, { user, roomCode }) => {
-            console.log(user, roomCode);
             localStorage.setItem('user', JSON.stringify(user));
             const roomData = { code: roomCode }
             localStorage.setItem('currentRoomInfos', JSON.stringify(roomData));
@@ -112,19 +126,31 @@ export const store = new createStore({
 
             commit('deleteCurrentRoundInfos');
             localStorage.removeItem('currentRoundInfos');
+
+            commit('deleteChosenArtInfo');
+            localStorage.removeItem('chosenArtInfo');
         },
         changeRoomStatus: ({ commit }, { status }) => {
             const currentRoomInfos = JSON.parse(localStorage.getItem('currentRoomInfos'));
             currentRoomInfos.status = status;
             commit('saveCurrentRoomInfos', currentRoomInfos);
             localStorage.setItem('currentRoomInfos', JSON.stringify(currentRoomInfos));
-        }
+        },
+        saveChosenArtInfo: ({ commit }, { chosenArtInfo }) => {
+            commit('saveChosenArtInfo', chosenArtInfo);
+            localStorage.setItem('chosenArtInfo', JSON.stringify(chosenArtInfo));
+        },
+        deleteChosenArtInfo: ({ commit }) => {
+            commit('deleteChosenArtInfo');
+            localStorage.removeItem('chosenArtInfo');
+        },
     },
     getters: {
         user: state => state.user,
         loggedIn: state => state.loggedIn,
         currentRoundInfos: state => state.currentRoundInfos,
         currentRoomInfos: state => state.currentRoomInfos,
+        chosenArtInfo: state => state.chosenArtInfo,
     },
 
 });

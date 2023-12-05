@@ -87,6 +87,10 @@ class RoomSocketManager {
         this.socket.on('roundStarted', callback);
     }
 
+    onRoundLoading(callback){
+        this.socket.on('roundLoading', callback);
+    }
+
     onRoundEnded(callback){
         this.socket.on('roundEnded', callback);
     }
@@ -121,6 +125,10 @@ class RoomSocketManager {
 
     offGameEnded(callback){
         this.socket.off('gameEnded', callback);
+    }
+
+    offRoundLoading(callback){
+        this.socket.off('roundLoading', callback);
     }
 }
 

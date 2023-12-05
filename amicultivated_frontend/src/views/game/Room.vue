@@ -36,7 +36,7 @@ const getNewRoomInfo = async () => {
 }
 const sendUpdateRoom = async (newInfos) => {
     try {
-        await api.updateRoom(roomCode.value, newInfos.maxPlayers);
+        await api.updateRoom(roomCode.value, newInfos.maxPlayers, newInfos.maxRounds);
     } catch (error) {
         handleError(error);
     }

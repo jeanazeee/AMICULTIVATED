@@ -1,20 +1,22 @@
 <template>
     <div class="form-container">
         <div class="form-front">
-            <p class="error-message" v-if="errorMessage"> {{ errorMessage }} </p>
-            <p class="title">Sign Up</p>
-            <div class="form">
-                <div class="input-group">
-                    <label for="username">Username</label>
-                    <input type="text" name="username" id="username" placeholder="" v-model="username">
-                </div>
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" name="password" id="password" placeholder="" v-model="password">
+            <form @submit.prevent="signup">
+                <p class="error-message" v-if="errorMessage"> {{ errorMessage }} </p>
+                <p class="title">Sign Up</p>
+                <div class="form">
+                    <div class="input-group">
+                        <label for="username">Username</label>
+                        <input type="text" name="username" id="username" placeholder="" v-model="username">
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" id="password" placeholder="" v-model="password">
 
+                    </div>
+                    <button class="sign" type="submit">Create account</button>
                 </div>
-                <button class="sign" @click="signup()">Create account</button>
-            </div>
+            </form>
             <br>
             <div class="line"></div>
             <p class="signup">Already have an account?
@@ -55,7 +57,7 @@ const signup = () => {
 .form-container {
     width: 580px;
     height: 580px;
-    display: flex;  
+    display: flex;
     margin: auto;
     margin-top: 3em;
     justify-content: center;

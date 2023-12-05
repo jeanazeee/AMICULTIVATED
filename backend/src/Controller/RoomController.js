@@ -138,6 +138,12 @@ class RoomController extends BaseController{
         // user currentRoomId to null
         await this.userRepository.removeRoomFromUser(username);
 
+        // if he was the last player in the room, delete the room
+        room = await this.roomRepository.getRoomById(roomId);
+        if(room.currentPlayerNumber == 0){
+            await this.roomRepository.deleteRoom(roomId);
+        }
+
         res.status(200).json({ message: "Left room successfully", code: room.code});
     }
 
@@ -159,7 +165,8 @@ class RoomController extends BaseController{
 
     async updateRoom(req, res){
         const {roomCode} = req.params;
-        const {maxPlayers} = req.body;
+        const {maxPlayers, maxRounds} = req.body;
+        
         if (!roomCode) {
             return res.status(400).json({ message: "Missing required fields" });
         }
@@ -169,10 +176,9 @@ class RoomController extends BaseController{
             return res.status(400).json({ message: "Room not found" });
         }
 
-        if(maxPlayers != undefined){
-            await this.roomRepository.updateMaxPlayers(roomCode, maxPlayers);
+        if(maxPlayers != undefined && maxRounds != undefined){
+            await this.roomRepository.updateSettings(roomCode, maxPlayers, maxRounds);
         }
-
         res.status(200).json({ message: "Room updated successfully"});
     }
 

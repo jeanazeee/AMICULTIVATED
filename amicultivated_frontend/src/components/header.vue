@@ -1,7 +1,7 @@
 <template >
     <div class="head" v-if="store.getters.loggedIn">
         <div class="icon">
-            <a href="/"><img src="../assets/logo.svg">  </a>
+            <a href="/"><img src="../assets/AMICULTIVATED.svg">  </a>
         </div>
         <div class="items">
             <ul>
@@ -36,21 +36,24 @@
 .head {
     width: 100%;
     background-color: transparent;
-    padding: 3em;
+    padding-top: 3em;
+    padding-left: 3em;
+    padding-right: 3em;
+    padding-bottom: 1em;
     top: 0;
     display: inline-block;
     display: flex;
 }
 
 .icon {
-    width: 2em;
-    height: 2em;
+    width: 6em;
     position: right;
 }
 
 .items {
     display: inline-block;
     display: flex;
+    align-items: center;
     width: 100%;
     position: right;
 }

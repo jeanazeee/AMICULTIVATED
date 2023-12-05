@@ -1,20 +1,21 @@
 <template>
     <div class="form-container">
         <div class="form-front">
-            <p class="error-message" v-if="errorMessage"> {{ errorMessage }} </p>
-            <p class="title">Login</p>
-            <div class="form">
-                <div class="input-group">
-                    <label for="username">Username</label>
-                    <input type="text" name="username" id="username" placeholder="" v-model="username">
+            <form @submit.prevent="login">
+                <p class="error-message" v-if="errorMessage"> {{ errorMessage }} </p>
+                <p class="title">Login</p>
+                <div class="form">
+                    <div class="input-group">
+                        <label for="username">Username</label>
+                        <input type="text" name="username" id="username" v-model="username">
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" id="password" v-model="password">
+                    </div>
+                    <button class="sign" type="submit">Log In</button>
                 </div>
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" name="password" id="password" placeholder="" v-model="password">
-
-                </div>
-                <button class="sign" @click="login()">Log In</button>
-            </div>
+            </form>
             <br>
             <div class="line"></div>
             <p class="signup">Don't have an account?

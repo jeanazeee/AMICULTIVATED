@@ -13,9 +13,17 @@
                     <div class="max-players">
                         <label for="playerRange">Nombre de joueurs max</label>
                         <div class="slider">
-                            <input type="range" name="playerRange" id="" v-model="props.roomInfos.maxPlayers" max="12"
+                            <input type="range" name="playerRange" id="" v-model="props.roomInfos.maxPlayers" max="12" :min="props.roomInfos.players.length"
                                 @change="sliderChange()">
                             {{ props.roomInfos.maxPlayers }}
+                        </div>
+                    </div>
+                    <div class="max-players">
+                        <label for="roundRange">Nombre de rounds</label>
+                        <div class="slider">
+                            <input type="range" name="roundRange" id="" v-model="props.roomInfos.maxRounds" max="12" min="1"
+                                @change="sliderChange()">
+                            {{ props.roomInfos.maxRounds }}
                         </div>
 
                     </div>
@@ -36,14 +44,11 @@
 </template>
 
 <script setup>
-import { useRoute, useRouter } from 'vue-router';
-import { ref, watch, onMounted, onUnmounted } from 'vue';
-import { useStore } from 'vuex';
+import { useRoute } from 'vue-router';
+import { ref } from 'vue';
 
-const router = useRouter();
 const route = useRoute();
 const roomCode = ref(route.params.roomCode);
-const store = useStore();
 const errorMessage = ref("");
 const fullPath = ref(window.location.origin + route.fullPath);
 
@@ -127,9 +132,6 @@ const copyPath = () => {
     height: 80%;
 }
 
-.main .start-game {
-    height: 10%;
-}
 
 .main .start-game button {
     min-height: 50px;
@@ -154,6 +156,10 @@ const copyPath = () => {
 .settings {
     margin-top: 50px;
     font-size: 1.5rem;
+}
+
+.settings div {
+    margin-bottom: 20px;
 }
 
 .settings .max-players label {
