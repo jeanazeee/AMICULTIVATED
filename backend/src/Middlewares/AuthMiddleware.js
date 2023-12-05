@@ -21,22 +21,21 @@ export default class AuthMiddleware {
     static async verifyUserFromBody(req, res, next){
         const token = req.headers['x-access-token'];
         if (!token) {
-          return res.status(403).send("Un token est requis pour l'authentification");
+          return res.status(403).send('Token not provided.');
         }
       
         try {
           const decoded = jwt.verify(token, ConfigManager.instance.jwtSecret);
           req.user = decoded;
         } catch (err) {
-          return res.status(401).send("Token invalide");
+          return res.status(401).send('Token verification failed.');
         }
       
-        // Comparaison du username dans le token et celui fourni dans la requête
         const usernameFromToken = req.user.username;
-        const {username} = req.body; // ou req.body.username, selon où se trouve le username dans votre requête
+        const {username} = req.body; 
       
         if (usernameFromToken !== username) {
-          return res.status(403).send("Le nom d'utilisateur ne correspond pas");
+          return res.status(403).send("Username does not match token infos.");
         }
       
         return next();

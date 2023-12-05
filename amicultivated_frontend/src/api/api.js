@@ -26,8 +26,6 @@ class API {
 
     async joinRoom(roomCode, username) {
         try {
-            
-
             const response = await this.api.post('room/join', {
                 roomCode: roomCode,
                 username: username
@@ -68,9 +66,6 @@ class API {
                 username: username,
                 maxRounds: 2,
             };
-            const headers = {
-                'x-access-token': this.store.getters.user.token
-            };
     
             const response = await this.api.post('room/create', body, {headers: this.headers});
             if(response.status === 201){
@@ -110,7 +105,7 @@ class API {
                 maxRounds: maxRounds
             }, {headers: this.headers});
             if(response.status === 200){
-                this.roomSocketManager.updateRoom(roomCode, maxPlayers);
+                this.roomSocketManager.updateRoom(roomCode);
                 return response.data;
             }else{
                 throw response;

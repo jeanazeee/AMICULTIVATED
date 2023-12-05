@@ -9,7 +9,6 @@ class ArtApiService {
 
         for (let page = 1; page <= pageEnd; page++) {
             try {
-                console.log('Fetching art page:', page);
                 const urlWithToken = `${ArtApiService.url}?paginationToken=${currentPaginationToken}`;
                 const response = await axios.get(urlWithToken);
 

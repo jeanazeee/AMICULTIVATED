@@ -30,7 +30,6 @@ class RoundSocketManager {
             return;
         }
 
-        console.log("Starting round");
         this.roomNamespace.to(this.roomCode).emit('roundLoading', { room: this.roomCode });
 
         this.isRoundStarted = true;
@@ -102,7 +101,7 @@ class RoundSocketManager {
                 this.evaluateAndSendResults();
             }
         } catch (e) {
-            console.log(e);
+            console.error(e);
         }
     }
 

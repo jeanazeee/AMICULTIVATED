@@ -32,7 +32,6 @@ class Database {
     }
 
 
-    //TODO : problem with asynchronus call to db.authenticate()
     init() {
         try{
             this.db = new Sequelize({
