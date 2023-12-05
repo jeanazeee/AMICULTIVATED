@@ -126,6 +126,9 @@ export const store = new createStore({
 
             commit('deleteCurrentRoundInfos');
             localStorage.removeItem('currentRoundInfos');
+
+            commit('deleteChosenArtInfo');
+            localStorage.removeItem('chosenArtInfo');
         },
         changeRoomStatus: ({ commit }, { status }) => {
             const currentRoomInfos = JSON.parse(localStorage.getItem('currentRoomInfos'));
