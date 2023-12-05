@@ -6,7 +6,7 @@ class API {
     app = null
     port = null
     static instance = null
-    server
+    server = null
 
     constructor(port){
         if(API.instance){
