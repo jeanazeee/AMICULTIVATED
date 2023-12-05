@@ -160,7 +160,6 @@ const endGamePage = () => {
     isEndGame.value = true;
 }
 
-console.log(displayGame() && !isEndGame.value)
 </script>
 
 <style scoped>

@@ -43,9 +43,9 @@ class AuthController extends BaseController{
 
         let currentRoom = (await this.roomRepository.getRoomById(user.currentRoomId));
 
-        let currentRoomCode = currentRoom ? currentRoom.code : "";
+        let currentRoomInfo = currentRoom ? currentRoom : {};
 
-        return res.status(200).json({ token: token,  username: username, userId: user.id, currentRoomCode: currentRoomCode });
+        return res.status(200).json({ token: token,  username: username, userId: user.id, currentRoomInfo: currentRoomInfo });
     }
 
     async signup(req, res) {

@@ -21,7 +21,6 @@ class AuthAPI {
                 password,
             });
 
-            console.log(response);
 
             if (response.status !== 200) {
                 throw new Error('Error logging in');
@@ -33,7 +32,7 @@ class AuthAPI {
                 token: response.data.token,
             }
 
-            this.store.dispatch('login', { user: user, currentRoomCode: response.data.roomCode })
+            this.store.dispatch('login', { user: user, roomCode: response.data.currentRoomInfo.code })
         } catch (error) {
             throw error;
         }
@@ -45,7 +44,6 @@ class AuthAPI {
                 username,
                 password,
             });
-            console.log(response);
 
             if (response.status !== 201) {
                 throw new Error('Error signing up');
